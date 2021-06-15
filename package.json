@@ -4,8 +4,17 @@
   "description": "",
   "author": "luics.xu@gmail.com",
   "license": "MIT",
+  "main": "lib/index.js",
+  "module": "esm/index.js",
+  "types": "lib/index.d.js",
+  "files": [
+    "lib",
+    "esm"
+  ],
   "scripts": {
-    "build": "",
+    "build": "npm run build:cjs && npm run build:esm",
+    "build:cjs": "tsc -p tsconfig.cjs.json",
+    "build:esm": "tsc -p tsconfig.esm.json",
     "test": "mocha -r ts-node/register test/**/*.spec.ts",
     "test:dev": "nodemon --watch ./ --ext ts --delay 0 --exec 'run-s clear test'",
     "clean": "rm -rf ./build && mkdir ./build",

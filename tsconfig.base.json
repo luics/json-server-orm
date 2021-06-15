@@ -1,13 +1,17 @@
 {
   "compilerOptions": {
     "target": "esnext",
-    "rootDir": "./",
-    "module": "commonjs",
+    "rootDir": "./src",
     "esModuleInterop": true,
-    "resolveJsonModule": true,
+    "declaration": true,
     // Check
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true
-  }
+  },
+  "exclude": [
+    "test",
+    "lib",
+    "esm",
+  ]
 }

@@ -6,7 +6,6 @@ import dbJson from './server/db.json';
 import { Post, User, Comment } from './server/schema';
 import { validation } from './server/validation';
 
-// let db: { [key: string]: Table<Schema> };
 const port = 31989;
 const server = `http://localhost:${port}/api/`;
 const db = {
