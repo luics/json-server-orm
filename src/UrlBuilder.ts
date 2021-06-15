@@ -21,11 +21,10 @@ export class UrlBuilder {
     if (name === '') throw new Error('name is empty');
     if (v === undefined) return this;
 
-    // FIXME Property 'description' does not exist on type 'symbol'. Do you need to change your target library? Try changing the `lib` compiler option to 'es2019' or later.
     const val = (typeof v === 'object' && v !== null && 'toString' in v)
       ? v.toString()
-      // : typeof v === 'symbol'
-      //   ? v.description
+      : typeof v === 'symbol'
+        ? v.description
         : (v + '');
     this.params.push(`${encodeURIComponent(name)}=${encodeURIComponent(val)}`);
     return this;

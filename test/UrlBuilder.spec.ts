@@ -27,7 +27,7 @@ describe('UrlBuilder', () => {
     strictEqual(new Builder(s, api, t).p('a', false).toString(), `${p}&a=false`);
     strictEqual(new Builder(s, api, t).p('a', true).toString(), `${p}&a=true`);
     strictEqual(new Builder(s, api, t).p('a', BigInt(0)).toString(), `${p}&a=0`);
-    // TODO strictEqual(new Builder(s, api, t).p('a', Symbol(0)).toString(), `${p}&a=0`);
+    strictEqual(new Builder(s, api, t).p('a', Symbol(0)).toString(), `${p}&a=0`);
     strictEqual(new Builder(s, api, t).p('a', null).toString(), `${p}&a=null`);
     strictEqual(new Builder(s, api, t).p('a', undefined).toString(), `${p}`);
     strictEqual(new Builder(s, api, t).p('a').toString(), `${p}`);
