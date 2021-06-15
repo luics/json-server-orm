@@ -1,12 +1,11 @@
 {
-  "private": true,
   "name": "json-server-orm",
   "version": "0.0.1",
   "description": "",
   "author": "luics.xu@gmail.com",
   "license": "MIT",
   "scripts": {
-    "build": "npm run clean && npm run test && webpack --mode production",
+    "build": "",
     "test": "mocha -r ts-node/register test/**/*.spec.ts",
     "test:dev": "nodemon --watch ./ --ext ts --delay 0 --exec 'run-s clear test'",
     "clean": "rm -rf ./build && mkdir ./build",

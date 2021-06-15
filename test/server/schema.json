@@ -1,0 +1,132 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "definitions": {
+        "Comment": {
+            "properties": {
+                "body": {
+                    "maxLength": 140,
+                    "minLength": 5,
+                    "type": "string"
+                },
+                "id": {
+                    "type": "number"
+                },
+                "post": {
+                    "$ref": "#/definitions/Post"
+                },
+                "postId": {
+                    "type": "number"
+                }
+            },
+            "propertyOrder": [
+                "id",
+                "body",
+                "postId",
+                "post"
+            ],
+            "required": [
+                "body",
+                "id",
+                "postId"
+            ],
+            "type": "object"
+        },
+        "Post": {
+            "properties": {
+                "comments": {
+                    "items": {
+                        "$ref": "#/definitions/Comment"
+                    },
+                    "type": "array"
+                },
+                "id": {
+                    "type": "number"
+                },
+                "meta": {
+                    "additionalProperties": true,
+                    "properties": {
+                    },
+                    "type": "object"
+                },
+                "private": {
+                    "type": "boolean"
+                },
+                "tags": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "test": {
+                    "type": "null"
+                },
+                "title": {
+                    "maxLength": 50,
+                    "minLength": 5,
+                    "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/User"
+                },
+                "userId": {
+                    "type": "integer"
+                },
+                "weight": {
+                    "type": "number"
+                }
+            },
+            "propertyOrder": [
+                "id",
+                "title",
+                "userId",
+                "tags",
+                "meta",
+                "private",
+                "weight",
+                "test",
+                "user",
+                "comments"
+            ],
+            "required": [
+                "id",
+                "title",
+                "userId"
+            ],
+            "type": "object"
+        },
+        "User": {
+            "properties": {
+                "id": {
+                    "type": "number"
+                },
+                "name": {
+                    "maxLength": 20,
+                    "minLength": 1,
+                    "type": "string"
+                },
+                "posts": {
+                    "items": {
+                        "$ref": "#/definitions/Post"
+                    },
+                    "type": "array"
+                },
+                "token": {
+                    "type": "string"
+                }
+            },
+            "propertyOrder": [
+                "id",
+                "name",
+                "token",
+                "posts"
+            ],
+            "required": [
+                "id",
+                "name",
+                "token"
+            ],
+            "type": "object"
+        }
+    }
+}
+

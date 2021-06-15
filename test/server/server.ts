@@ -40,7 +40,10 @@ export function start(db?: string | object, port?: number, isProduction?: boolea
 }
 
 export function close() {
-  if (server) server.close();
+  if (server) {
+    server.close();
+    console.log('JSON server is closed.');
+  }
 }
 
 // Run in cli

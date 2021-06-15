@@ -8,8 +8,8 @@ export class Table<T extends Schema> {
   constructor(
     public server: string,
     public api: string,
-    public token?: string,
     public validate?: ValidateFunction<T>,
+    public token?: string,
   ) {
   }
 

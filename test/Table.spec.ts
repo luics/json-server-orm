@@ -1,38 +1,25 @@
 import 'mocha';
 import { ok, strictEqual, rejects } from 'assert';
-import { Table } from '../src/Table';
+import { Table } from '../src';
 import * as Server from './server/server';
 import dbJson from './server/db.json';
 import { Post, User, Comment } from './server/schema';
+import { validation } from './server/validation';
 
 // let db: { [key: string]: Table<Schema> };
 const port = 31989;
 const server = `http://localhost:${port}/api/`;
 const db = {
-  posts: new Table<Post>(server, 'posts'),
-  users: new Table<User>(server, 'users'),
-  comments: new Table<Comment>(server, 'comments'),
+  posts: new Table<Post>(server, 'posts', validation.post),
+  users: new Table<User>(server, 'users', validation.user),
+  comments: new Table<Comment>(server, 'comments', validation.comment),
 };
 const len = dbJson.posts.length;
 
 describe('Table', () => {
-  before(async () => {
-    const startServer = () => {
-      try {
-        Server.start(dbJson, port, false);
-      } catch (e) {
-        console.error(e);
-        // port++;
-        // startServer();
-      }
-    };
-    startServer();
-  });
+  before(async () => Server.start(dbJson, port, false));
 
-  after(async () => {
-    Server.close();
-    console.log('JSON server is closed.');
-  });
+  after(async () => Server.close());
 
   it('init', async () => {
     ok(db);
@@ -144,10 +131,10 @@ describe('Table', () => {
     strictEqual((await db.posts.all()).length, len);
   });
 
-  // it('db.posts.add() +validation', async () => {
-  //   rejects(async () => await db.posts.add({ title: 'post from test' }));
-  //   rejects(async () => await db.posts.add({ title: 'post', userId: 1 }));
-  // });
+  it('db.posts.add() +validation', async () => {
+    rejects(async () => await db.posts.add({ title: 'post from test' })); // ValidationError
+    rejects(async () => await db.posts.add({ title: 'post', userId: 1 }));
+  });
 
   it('db.posts.update()', async () => {
     strictEqual((await db.posts.update({ id: 1, title: '12345', userId: 1 }))?.title, '12345');

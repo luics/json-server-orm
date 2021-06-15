@@ -2,21 +2,15 @@ module.exports = {
   parser: '@typescript-eslint/parser',
   parserOptions: {
     // project: './tsconfig.json',
-    ecmaFeatures: { jsx: true }
+    // ecmaFeatures: { jsx: true }
   },
-  plugins: ['@typescript-eslint', 'react'],
-  settings: {
-    react: { version: 'detect' },
-  },
+  plugins: ['@typescript-eslint'],
   extends: [
-    'plugin:react/recommended',
     'plugin:@typescript-eslint/recommended',
   ],
   rules: {
     semi: ['error', 'always'],
     quotes: ['error', 'single'],
-    'react/prop-types': 'off',
-    'react/jsx-no-target-blank': 'off',
     '@typescript-eslint/no-unused-vars': 'warn',
     '@typescript-eslint/no-non-null-assertion': 'off',
     '@typescript-eslint/no-empty-function': 'off',
