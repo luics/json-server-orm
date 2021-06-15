@@ -1,0 +1,44 @@
+{
+  "private": true,
+  "name": "json-server-orm",
+  "version": "0.0.1",
+  "description": "",
+  "author": "luics.xu@gmail.com",
+  "license": "MIT",
+  "scripts": {
+    "build": "npm run clean && npm run test && webpack --mode production",
+    "test": "mocha -r ts-node/register test/**/*.spec.ts",
+    "test:dev": "nodemon --watch ./ --ext ts --delay 0 --exec 'run-s clear test'",
+    "clean": "rm -rf ./build && mkdir ./build",
+    "clear": "printf \"\\33c\\e[3J\"",
+    "lint": "eslint \"{src,test}/**/*.{ts,tsx,js}\"",
+    "postinstall": "echo 'npm run precommit' > .git/hooks/pre-commit && chmod 777 .git/hooks/pre-commit",
+    "precommit": "npm run lint && npm test",
+    "jsonschema": "npx typescript-json-schema 'test/server/schema.ts' '*' -o 'test/server/schema.json' --required --propOrder"
+  },
+  "engines": {
+    "node": ">= 14.17.0",
+    "npm": ">= 6.14.13"
+  },
+  "devDependencies": {
+    "@types/assert": "^1.5.1",
+    "@types/json-server": "^0.14.3",
+    "@types/mocha": "^7.0.2",
+    "@types/node": "^14.0.13",
+    "@typescript-eslint/eslint-plugin": "^3.5.0",
+    "@typescript-eslint/parser": "^3.5.0",
+    "eslint": "^7.3.1",
+    "mocha": "^8.0.1",
+    "nodemon": "^2.0.4",
+    "npm-run-all": "^4.1.5",
+    "ts-loader": "^8.0.0",
+    "ts-node": "^8.10.2",
+    "typescript": "^4.3.2",
+    "typescript-json-schema": "^0.50.1",
+    "json-server": "^0.16.3"
+  },
+  "dependencies": {
+    "ajv": "^8.6.0",
+    "axios": "^0.21.1"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "eslint.validate": [
+    "html",
+    "javascript",
+    "typescript",
+    "javascriptreact",
+    "typescriptreact",
+  ],
+  "todo-tree.tree.scanMode": "workspace only"
+}
