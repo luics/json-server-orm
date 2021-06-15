@@ -1,6 +1,6 @@
 {
   "name": "json-server-orm",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "author": "luics.xu@gmail.com",
   "license": "MIT",
@@ -10,6 +10,10 @@
   "files": [
     "lib",
     "esm"
+  ],
+  "keywords": [
+    "json-server",
+    "orm"
   ],
   "scripts": {
     "build": "run-s clean build:cjs build:esm",
