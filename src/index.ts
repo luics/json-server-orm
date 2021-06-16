@@ -8,6 +8,6 @@ export class ValidationError extends Error {
     super(message);
   }
 }
-export { PluralSchema, SingularSchema } from './schema';
+export { Schema, PluralSchema, SingularSchema } from './schema';
 export { Plural, Plural as Table } from './Plural';
 export { Singular, Singular as Object } from './Singular';
