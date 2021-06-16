@@ -1,7 +1,6 @@
-import { Schema } from '../../src';
+import { PluralSchema, SingularSchema } from '../../src';
 
-export interface Post extends Schema {
-  id: number,
+export interface Post extends PluralSchema {
   /**
    * @minLength 5
    * @maxLength 50
@@ -22,8 +21,7 @@ export interface Post extends Schema {
   comments?: Comment[],
 }
 
-export interface User extends Schema {
-  id: number,
+export interface User extends PluralSchema {
   /**
    * @minLength 1
    * @maxLength 20
@@ -33,8 +31,7 @@ export interface User extends Schema {
   posts?: Post[],
 }
 
-export interface Comment extends Schema {
-  id: number,
+export interface Comment extends PluralSchema {
   /**
    * @minLength 5
    * @maxLength 140
@@ -42,4 +39,9 @@ export interface Comment extends Schema {
   body: string,
   postId: number,
   post?: Post,
+}
+
+export interface Profile extends SingularSchema {
+  name: string,
+  desc: string,
 }

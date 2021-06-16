@@ -16,6 +16,7 @@
     "orm"
   ],
   "scripts": {
+    "start:server": "npx ts-node test/server/server.ts",
     "build": "run-s clean build:cjs build:esm",
     "build:cjs": "tsc -p tsconfig.cjs.json",
     "build:esm": "tsc -p tsconfig.esm.json",

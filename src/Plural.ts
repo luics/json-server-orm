@@ -1,19 +1,12 @@
 import axios from 'axios';
-import { ValidateFunction } from 'ajv';
+import { Base } from './Base';
 import { UrlBuilder } from './UrlBuilder';
 import { QueryOptions } from './QueryOptions';
-import { Schema, ValidationError } from '.';
+import { PluralSchema } from '.';
 
-export class Table<T extends Schema> {
-  constructor(
-    public server: string,
-    public api: string,
-    public validate?: ValidateFunction<T>,
-    public token?: string,
-  ) {
-  }
+export class Plural<T extends PluralSchema> extends Base<T> {
 
-  async count(opts?: QueryOptions): Promise<number> {
+  public async count(opts?: QueryOptions): Promise<number> {
     try {
       const url = this.getUrl(opts)
         .limit(opts?.limit ?? 1)
@@ -25,7 +18,7 @@ export class Table<T extends Schema> {
     }
   }
 
-  async all(opts?: QueryOptions): Promise<T[]> {
+  public async all(opts?: QueryOptions): Promise<T[]> {
     try {
       const url = this.getUrl(opts);
       const res = (await axios.get(url.toString()));
@@ -35,22 +28,12 @@ export class Table<T extends Schema> {
     }
   }
 
-  async one(id: number): Promise<T | undefined> {
+  public async one(id: number): Promise<T | undefined> {
     const items = await this.all({ ids: [id] });
     if (items.length) return items[0];
   }
 
-  private val(d: any) {
-    if (!this.validate) return;
-
-    const valid = this.validate(d);
-    if (valid) return;
-
-    const error = (this.validate.errors && this.validate.errors.length) ? this.validate.errors[0] : null;
-    throw error ? new ValidationError(error.message!, error.instancePath.substr(1)) : new Error('Unknown validation error');
-  }
-
-  async add(data: any): Promise<T> {
+  public async add(data: any): Promise<T> {
     try {
       this.val({ ...data, id: 0 });
       const url = new UrlBuilder(this.server, this.api, this.token).toString();
@@ -63,7 +46,7 @@ export class Table<T extends Schema> {
     }
   }
 
-  async update(data: T): Promise<T> {
+  public async update(data: T): Promise<T> {
     try {
       this.val(data);
       const url = new UrlBuilder(this.server, `${this.api}/${data.id}`, this.token).toString();
@@ -75,7 +58,7 @@ export class Table<T extends Schema> {
     }
   }
 
-  async delete(id: number): Promise<void> {
+  public async delete(id: number): Promise<void> {
     try {
       const url = new UrlBuilder(this.server, `${this.api}/${id}`, this.token).toString();
       await axios.delete(url);
@@ -84,7 +67,7 @@ export class Table<T extends Schema> {
     }
   }
 
-  protected getUrl(opts?: QueryOptions): UrlBuilder {
+  private getUrl(opts?: QueryOptions): UrlBuilder {
     const url = new UrlBuilder(this.server, this.api, this.token)
       .limit(opts?.limit)
       .page(opts?.page)
@@ -105,5 +88,4 @@ export class Table<T extends Schema> {
 
     return url;
   }
-
 }
