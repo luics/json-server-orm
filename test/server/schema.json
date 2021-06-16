@@ -19,10 +19,10 @@
                 }
             },
             "propertyOrder": [
-                "id",
                 "body",
                 "postId",
-                "post"
+                "post",
+                "id"
             ],
             "required": [
                 "body",
@@ -76,7 +76,6 @@
                 }
             },
             "propertyOrder": [
-                "id",
                 "title",
                 "userId",
                 "tags",
@@ -85,12 +84,33 @@
                 "weight",
                 "test",
                 "user",
-                "comments"
+                "comments",
+                "id"
             ],
             "required": [
                 "id",
                 "title",
                 "userId"
+            ],
+            "type": "object"
+        },
+        "Profile": {
+            "properties": {
+                "desc": {
+                    "type": "string"
+                },
+                "name": {
+                    "maxLength": 20,
+                    "minLength": 5,
+                    "type": "string"
+                }
+            },
+            "propertyOrder": [
+                "name",
+                "desc"
+            ],
+            "required": [
+                "name"
             ],
             "type": "object"
         },
@@ -115,10 +135,10 @@
                 }
             },
             "propertyOrder": [
-                "id",
                 "name",
                 "token",
-                "posts"
+                "posts",
+                "id"
             ],
             "required": [
                 "id",

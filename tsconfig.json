@@ -1,6 +1,9 @@
 {
   "compilerOptions": {
     "target": "esnext",
+    "lib": [
+      "esnext"
+    ],
     "rootDir": "./",
     "module": "commonjs",
     "esModuleInterop": true,

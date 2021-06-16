@@ -1,5 +1,6 @@
 import { ValidateFunction } from 'ajv';
-import { Schema, ValidationError } from '.';
+import { ValidationError } from '.';
+import { Schema } from './schema';
 
 export class Base<T extends Schema> {
   constructor(

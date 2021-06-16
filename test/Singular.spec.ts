@@ -1,5 +1,5 @@
 import 'mocha';
-import { ok, strictEqual } from 'assert';
+import { ok, rejects, strictEqual } from 'assert';
 import { Singular } from '../src';
 import * as Server from './server/server';
 import dbJson from './server/db.json';
@@ -26,12 +26,16 @@ describe('Object(Singular)', () => {
     ok((await db.profile.one()));
     strictEqual((await db.profile.one()).name, 'luics\'s blog');
   });
-  
+
   it('db.profile.update()', async () => {
     strictEqual((await db.profile.update({ name: 'luics' }))?.name, 'luics');
-    strictEqual((await db.profile.update({ name: 'luics', desc:'123' }))?.desc, '123');
-    strictEqual((await db.profile.update({ name: 'luics', age:1 }))?.age, 1);
+    strictEqual((await db.profile.update({ name: 'luics', desc: '123' }))?.desc, '123');
+    strictEqual((await db.profile.update({ name: 'luics', age: 1 }))?.age, 1);
     strictEqual((await db.profile.one()).age, 1);
+  });
+
+  it('db.profile.update() +validation', async () => {
+    rejects(async () => await db.profile.update({ name: '1234' })); // ValidationError
   });
 
 });

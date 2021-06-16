@@ -1,4 +1,4 @@
-import { PluralSchema, SingularSchema } from '../../src';
+import { PluralSchema, SingularSchema } from '../../src/schema';
 
 export interface Post extends PluralSchema {
   /**
@@ -42,6 +42,10 @@ export interface Comment extends PluralSchema {
 }
 
 export interface Profile extends SingularSchema {
+  /**
+   * @minLength 5
+   * @maxLength 20
+   */
   name: string,
   desc?: string,
 }
