@@ -26,9 +26,12 @@ describe('Object(Singular)', () => {
     ok((await db.profile.one()));
     strictEqual((await db.profile.one()).name, 'luics\'s blog');
   });
-
-  it('db.posts.update()', async () => {
-    strictEqual((await db.profile.update({ name: 'luics', desc: '' }))?.name, 'luics');
+  
+  it('db.profile.update()', async () => {
+    strictEqual((await db.profile.update({ name: 'luics' }))?.name, 'luics');
+    strictEqual((await db.profile.update({ name: 'luics', desc:'123' }))?.desc, '123');
+    strictEqual((await db.profile.update({ name: 'luics', age:1 }))?.age, 1);
+    strictEqual((await db.profile.one()).age, 1);
   });
 
 });

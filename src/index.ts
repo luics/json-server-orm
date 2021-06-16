@@ -1,4 +1,5 @@
 export type Order = 'asc' | 'desc';
+export type KVO = { [k: string]: any };
 export type OperatorNameValue = { name: string, value: number };
 export type NameValue = { name: string, value: any };
 // eslint-disable-next-line @typescript-eslint/no-empty-interface

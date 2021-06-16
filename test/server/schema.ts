@@ -43,5 +43,5 @@ export interface Comment extends PluralSchema {
 
 export interface Profile extends SingularSchema {
   name: string,
-  desc: string,
+  desc?: string,
 }

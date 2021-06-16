@@ -1,11 +1,11 @@
 import axios from 'axios';
 import { Base } from './Base';
 import { UrlBuilder } from './UrlBuilder';
-import { SingularSchema } from '.';
+import { KVO, SingularSchema } from '.';
 
 export class Singular<T extends SingularSchema> extends Base<T> {
 
-  public async one(): Promise<T> {
+  public async one(): Promise<T & KVO> {
     try {
       const url = new UrlBuilder(this.server, this.api, this.token).toString();
       const res = await axios.get(url);
@@ -16,7 +16,7 @@ export class Singular<T extends SingularSchema> extends Base<T> {
     }
   }
 
-  public async update(data: T & { [k: string]: any }): Promise<T> {
+  public async update(data: T & KVO): Promise<T & KVO> {
     try {
       this.val(data);
       const url = new UrlBuilder(this.server, this.api, this.token).toString();
