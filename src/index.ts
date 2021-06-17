@@ -1,3 +1,7 @@
+import { Plural } from './Plural';
+import { Singular } from './Singular';
+import { PluralSchema, SingularSchema } from './schema';
+
 export type Order = 'asc' | 'desc';
 export type KVO = { [k: string]: any };
 export type OperatorNameValue = { name: string, value: number };
@@ -9,5 +13,7 @@ export class ValidationError extends Error {
   }
 }
 export { Schema, PluralSchema, SingularSchema } from './schema';
-export { Plural, Plural as Table } from './Plural';
-export { Singular, Singular as Object } from './Singular';
+export { Validation } from './Validation';
+export { Plural, Plural as Table };
+export { Singular, Singular as Object };
+export type DB = { [k: string]: (Plural<PluralSchema> | Singular<SingularSchema>) };
