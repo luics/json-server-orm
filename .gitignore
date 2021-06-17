@@ -2,3 +2,4 @@ node_modules/
 build/
 lib/
 esm/
+.json-server-orm
