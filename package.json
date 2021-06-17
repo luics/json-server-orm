@@ -1,6 +1,6 @@
 {
   "name": "json-server-orm",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "",
   "author": "luics.xu@gmail.com",
   "license": "MIT",
@@ -27,7 +27,7 @@
     "lint": "eslint \"{src,test}/**/*.{ts,tsx,js}\"",
     "post-install": "echo 'npm run precommit' > .git/hooks/pre-commit && chmod 777 .git/hooks/pre-commit",
     "precommit": "npm run lint && npm test",
-    "prepublish": "npm run precommit && npm run build",
+    "prepublish": "npm run precommit && npm run build && open https://cnpmjs.org/package/json-server-orm",
     "jsonschema": "npx typescript-json-schema 'test/server/schema.ts' '*' -o 'test/server/schema.json' --required --propOrder"
   },
   "engines": {
