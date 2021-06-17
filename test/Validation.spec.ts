@@ -5,12 +5,12 @@ import schema from './server/schema.json';
 
 const v = new Validation(schema);
 
-describe('validation', () => {
-  it('getDefinitionNameFromKey', () => {
+describe('Validation', () => {
+  it('key2DefinitionName', () => {
     strictEqual('Post', v.key2DefinitionName('post'));
   });
 
-  it('getDefinitionNameFromTable', () => {
+  it('table2DefinitionName', () => {
     strictEqual('Post', v.table2DefinitionName('posts'));
   });
 });

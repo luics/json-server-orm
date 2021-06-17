@@ -39,6 +39,7 @@ describe('Object(Singular)', () => {
   });
 
   it('db.profile.update() +validation', async () => {
+    rejects(async () => await db.profile.update({ name1: '1234' } as any)); // ValidationError
     rejects(async () => await db.profile.update({ name: '1234' })); // ValidationError
   });
 
