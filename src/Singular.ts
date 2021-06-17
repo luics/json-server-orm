@@ -16,11 +16,11 @@ export class Singular<T extends SingularSchema> extends Base<T> {
     }
   }
 
-  public async update(data: T & KVO): Promise<T & KVO> {
+  public async update(data: T & KVO, override?: boolean): Promise<T & KVO> {
     try {
       this.val(data);
       const url = new UrlBuilder(this.server, this.api, this.token).toString();
-      const res = (await axios.patch(url, data));
+      const res = await (override ? axios.put(url, data) : axios.patch(url, data));
 
       return res.data;
     } catch (error) {

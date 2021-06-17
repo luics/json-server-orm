@@ -34,6 +34,10 @@ describe('Object(Singular)', () => {
     strictEqual((await db.profile.one()).age, 1);
   });
 
+  it('db.profile.update() +override', async () => {
+    strictEqual((await db.profile.update({ name: 'luics' }, true))?.desc, undefined);
+  });
+
   it('db.profile.update() +validation', async () => {
     rejects(async () => await db.profile.update({ name: '1234' })); // ValidationError
   });
