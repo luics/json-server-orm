@@ -1,15 +1,13 @@
 {
   "name": "json-server-orm",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "",
   "author": "luics.xu@gmail.com",
   "license": "MIT",
   "main": "lib/index.js",
-  "module": "esm/index.js",
   "types": "lib/index.d.js",
   "files": [
-    "lib",
-    "esm"
+    "lib"
   ],
   "keywords": [
     "json-server",
@@ -17,10 +15,9 @@
   ],
   "scripts": {
     "start:server": "npx ts-node test/server/server.ts",
-    "build": "run-s clean build:cjs build:esm",
+    "build": "run-s clean build:cjs",
     "build:cjs": "tsc -p tsconfig.cjs.json",
-    "build:esm": "tsc -p tsconfig.esm.json",
-    "clean": "rm -rf ./lib ./esm && mkdir ./lib ./esm",
+    "clean": "rm -rf ./lib && mkdir ./lib",
     "test": "mocha -r ts-node/register test/**/*.spec.ts",
     "test:dev": "nodemon --watch ./ --ext ts --delay 0 --exec 'run-s clear test'",
     "clear": "printf \"\\33c\\e[3J\"",

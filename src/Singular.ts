@@ -4,6 +4,8 @@ import { UrlBuilder } from './UrlBuilder';
 import { KVO, SingularSchema } from '.';
 
 export class Singular<T extends SingularSchema> extends Base<T> {
+  
+  public isPlural = false;
 
   public async one(): Promise<T & KVO> {
     try {
