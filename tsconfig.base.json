@@ -1,19 +1,16 @@
 {
   "compilerOptions": {
-    "target": "esnext",
-    "rootDir": "./src",
-    "declaration": true,
+    "target": "es6",
+    "lib": [
+      "es2019.Symbol"
+    ],
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
     // Check
     "strict": true,
     "noUnusedLocals": true,
-    "noUnusedParameters": true,
-
-    "esModuleInterop": true,
-    "moduleResolution": "node",
-  },
-  "exclude": [
-    "test",
-    "lib",
-    "esm",
-  ]
+    "noUnusedParameters": true
+  }
 }

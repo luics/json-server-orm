@@ -1,16 +1,3 @@
 {
-  "compilerOptions": {
-    "target": "esnext",
-    "lib": [
-      "esnext"
-    ],
-    "rootDir": "./",
-    "module": "commonjs",
-    "esModuleInterop": true,
-    "resolveJsonModule": true,
-    // Check
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true
-  }
+  "extends": "./tsconfig.base.json"
 }
