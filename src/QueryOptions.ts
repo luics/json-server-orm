@@ -1,4 +1,4 @@
-import { NameValue, OperatorNameValue, Order } from '.';
+import { KVO, NameValue, OperatorNameValue, Order } from './types';
 
 /**
  * @see https://github.com/typicode/json-server#routes
@@ -19,5 +19,5 @@ export interface QueryOptions {
   embed?: string[],
   expand?: string[],
 
-  param?: NameValue[],
+  param?: NameValue[] | KVO,
 }

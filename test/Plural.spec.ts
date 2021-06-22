@@ -148,10 +148,15 @@ describe('Table(Plural)', () => {
     strictEqual((await db.comments.count()), 5);
   });
 
-  it('db.comments.all()', async () => {
+  it('db.comments.all() +param array', async () => {
     strictEqual((await db.comments.all()).length, 5);
     strictEqual((await db.comments.all({ param: [{ name: 'postId', value: 1 }] })).length, 3);
     strictEqual((await db.comments.all({ param: [{ name: 'postId', value: 1 }, { name: 'postId', value: 2 }] })).length, 4);
+  });
+
+  it('db.comments.all() +param object', async () => {
+    strictEqual((await db.comments.all({ param: { postId: 1 } })).length, 3);
+    strictEqual((await db.comments.all({ param: { body: 'some comment 1' } })).length, 1);
   });
 
   it('db.comments.add/delete()', async () => {
