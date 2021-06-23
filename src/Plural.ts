@@ -84,7 +84,11 @@ export class Plural<T extends PluralSchema> extends Base<T> {
     if (opts?.like) opts.like.forEach(it => url.like(it.name, it.value));
     if (opts?.embed) opts.embed.forEach(it => url.embed(it));
     if (opts?.expand) opts.expand.forEach(it => url.expand(it));
-    if (opts?.param) opts.param.forEach(it => url.p(it.name, it.value));
+    if (opts?.param) {
+      const param = opts.param;
+      if (Array.isArray(param)) param.forEach(it => url.p(it.name, it.value));
+      else Object.entries(param).forEach(([name, value]) => url.p(name, value));
+    }
 
     return url;
   }
