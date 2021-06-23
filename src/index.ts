@@ -13,6 +13,8 @@ export class ValidationError extends Error {
   }
 }
 export { Schema, PluralSchema, SingularSchema } from './schema';
+export { UrlBuilder } from './UrlBuilder';
+export { QueryOptions } from './QueryOptions';
 export { Validation } from './Validation';
 export { Plural, Plural as Table };
 export { Singular, Singular as Object };
