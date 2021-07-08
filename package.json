@@ -1,13 +1,14 @@
 {
   "name": "json-server-orm",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "",
   "author": "luics.xu@gmail.com",
   "license": "MIT",
-  "main": "lib/index.js",
-  "types": "lib/index.d.js",
+  "main": "cjs/index.js",
+  "types": "cjs/index.d.js",
   "files": [
-    "lib"
+    "cjs",
+    "esm"
   ],
   "keywords": [
     "json-server",
@@ -15,16 +16,12 @@
   ],
   "scripts": {
     "start:server": "npx ts-node test/server/server.ts",
-    "build": "run-s clean build:cjs",
-    "build:cjs": "tsc -p tsconfig.cjs.json",
-    "clean": "rm -rf ./lib && mkdir ./lib",
     "test": "mocha -r ts-node/register test/**/*.spec.ts",
     "test:dev": "nodemon --watch ./ --ext ts --delay 0 --exec 'run-s clear test'",
     "clear": "printf \"\\33c\\e[3J\"",
     "lint": "eslint \"{src,test}/**/*.{ts,tsx,js}\"",
-    "post-install": "echo 'npm run precommit' > .git/hooks/pre-commit && chmod 777 .git/hooks/pre-commit",
-    "precommit": "npm run lint && npm test",
-    "prepublish": "npm run precommit && npm run build && open https://cnpmjs.org/package/json-server-orm",
+    "prepublish": "rm -rf cjs esm && npm run dist:lib && open https://cnpmjs.org/package/json-server-orm",
+    "dist:lib": "tsc -p tsconfig.cjs.json && tsc -p tsconfig.esm.json",
     "jsonschema": "npx typescript-json-schema 'test/server/schema.ts' '*' -o 'test/server/schema.json' --required --propOrder"
   },
   "engines": {
