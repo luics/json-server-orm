@@ -1,6 +1,6 @@
 {
   "name": "json-server-orm",
-  "version": "0.5.0",
+  "version": "0.4.2",
   "description": "",
   "author": "luics.xu@gmail.com",
   "license": "MIT",
@@ -20,7 +20,7 @@
     "test:dev": "nodemon --watch ./ --ext ts --delay 0 --exec 'run-s clear test'",
     "clear": "printf \"\\33c\\e[3J\"",
     "lint": "eslint \"{src,test}/**/*.{ts,tsx,js}\"",
-    "prepublish": "rm -rf cjs esm && npm run dist:lib && open https://cnpmjs.org/package/json-server-orm",
+    "prepublish": "rm -rf cjs esm && npm run dist:lib",
     "dist:lib": "tsc -p tsconfig.cjs.json && tsc -p tsconfig.esm.json",
     "jsonschema": "npx typescript-json-schema 'test/server/schema.ts' '*' -o 'test/server/schema.json' --required --propOrder"
   },
