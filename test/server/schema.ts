@@ -13,6 +13,7 @@ export interface Post extends PluralSchema {
   userId: number,
 
   tags?: string[],
+  // eslint-disable-next-line @typescript-eslint/ban-types
   meta?: object,
   private?: boolean,
   weight?: number,

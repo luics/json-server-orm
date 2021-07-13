@@ -14,5 +14,6 @@ export const key2DefinitionName = (k: string): string => (k[0].toUpperCase() + k
 export const validation: { [key: string]: ValidateFunction<any> } = {};
 
 keys.forEach((k) => {
-  validation[k] = ajv.getSchema(`#/definitions/${key2DefinitionName(k)}`)!;
+  const v = ajv.getSchema(`#/definitions/${key2DefinitionName(k)}`);
+  if (v) validation[k] = v;
 });

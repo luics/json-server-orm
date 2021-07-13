@@ -23,8 +23,8 @@ export default class Plural<T extends PluralSchema> extends Base<T> {
     return items[0];
   }
 
-  public async add(data: any): Promise<T> {
-    this.val({ ...data, id: 0 });
+  public async add(data: unknown): Promise<T> {
+    this.val({ ...(data as any), id: 0 });
     const url = new UrlBuilder(this.server, this.api, this.token).toString();
     const res = (await axios.post(url, data));
 

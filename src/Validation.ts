@@ -4,14 +4,15 @@ import { JSONType } from '.';
 export default class Validation {
   validation: { [key: string]: ValidateFunction<any> } = {};
 
-  constructor(public schema: any) {
+  constructor(public schema: unknown) {
     const ajv = new Ajv();
     ajv.addKeyword('propertyOrder'); // from TJS
-    ajv.addSchema(schema);
+    ajv.addSchema((schema as any));
 
-    const keys = Object.keys(schema.definitions).map((k) => k.toLowerCase()); // [post, ]
+    const keys = Object.keys((schema as any).definitions).map((k) => k.toLowerCase()); // [post, ]
     keys.forEach((k) => {
-      this.validation[k] = ajv.getSchema(`#/definitions/${Validation.key2DefinitionName(k)}`)!;
+      const v = ajv.getSchema(`#/definitions/${Validation.key2DefinitionName(k)}`);
+      if (v) this.validation[k] = v;
     });
   }
 
@@ -51,7 +52,7 @@ export default class Validation {
       }
     });
     // keep definition order
-    const order = (this.schema.definitions as any)[Validation.table2DefinitionName(name)]
+    const order = ((this.schema as any).definitions)[Validation.table2DefinitionName(name)]
       ?.propertyOrder as string[] ?? [];
     const retFields: string[] = [];
     order.forEach((f) => fields.includes(f) && retFields.push(f));
@@ -60,7 +61,7 @@ export default class Validation {
   }
 
   private getProperties(name: string): { [k: string]: any } {
-    return (this.schema.definitions as any)[Validation.table2DefinitionName(name)]
+    return ((this.schema as any).definitions)[Validation.table2DefinitionName(name)]
       ?.properties as { [k: string]: any } ?? {};
   }
 

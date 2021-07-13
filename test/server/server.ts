@@ -6,7 +6,7 @@ import jsonServer from 'json-server';
 
 let server: Server;
 
-export function start(db?: string | object, port?: number, isProduction?: boolean) {
+export function start(db?: string | any, port?: number, isProduction?: boolean): void {
   db = db || process.argv[2] || 'db.json';
 
   port = port || parseInt(process.env.PORT || '3000', 10);
@@ -42,7 +42,7 @@ export function start(db?: string | object, port?: number, isProduction?: boolea
   });
 }
 
-export function close() {
+export function close(): void {
   if (server) {
     server.close();
     console.log('JSON server is closed.');

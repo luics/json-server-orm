@@ -10,11 +10,11 @@ export default class UrlBuilder {
     if (this.token) this.p('_token', this.token);
   }
 
-  toString() {
+  toString(): string {
     return this.base + this.apiName + (this.params.length ? (`?${this.params.join('&')}`) : '');
   }
 
-  p(name: string, v?: any) {
+  p(name: string, v?: unknown): UrlBuilder {
     if (name === '') throw new Error('name is empty');
     if (v === undefined) return this;
 
@@ -24,37 +24,37 @@ export default class UrlBuilder {
       : typeof v === 'symbol'
         ? v.description
         : (`${v}`);
-    this.params.push(`${encodeURIComponent(name)}=${encodeURIComponent(val)}`);
+    this.params.push(`${encodeURIComponent(name)}=${encodeURIComponent(val ?? '')}`);
     return this;
   }
 
-  id(v?: number) { return this.p('id', v); }
+  id(v?: number): UrlBuilder { return this.p('id', v); }
 
-  page(v?: number) { return this.p('_page', v); }
+  page(v?: number): UrlBuilder { return this.p('_page', v); }
 
-  limit(v?: number) { return this.p('_limit', v); }
+  limit(v?: number): UrlBuilder { return this.p('_limit', v); }
 
-  sort(v?: string) { return this.p('_sort', v); }
+  sort(v?: string): UrlBuilder { return this.p('_sort', v); }
 
-  order(v?: Order) { return this.p('_order', v); }
+  order(v?: Order): UrlBuilder { return this.p('_order', v); }
 
-  start(v?: number) { return this.p('_start', v); }
+  start(v?: number): UrlBuilder { return this.p('_start', v); }
 
-  end(v?: number) { return this.p('_end', v); }
+  end(v?: number): UrlBuilder { return this.p('_end', v); }
 
-  gte(name: string, v?: number) { return this.p(`${name}_gte`, v); }
+  gte(name: string, v?: number): UrlBuilder { return this.p(`${name}_gte`, v); }
 
-  lte(name: string, v?: number) { return this.p(`${name}_lte`, v); }
+  lte(name: string, v?: number): UrlBuilder { return this.p(`${name}_lte`, v); }
 
-  ne(name: string, v?: number) { return this.p(`${name}_ne`, v); }
+  ne(name: string, v?: number): UrlBuilder { return this.p(`${name}_ne`, v); }
 
-  like(name: string, v?: any) { return this.p(`${name}_like`, v); }
+  like(name: string, v?: unknown): UrlBuilder { return this.p(`${name}_like`, v); }
 
-  q(v?: any) { return this.p('q', v); }
+  q(v?: unknown): UrlBuilder { return this.p('q', v); }
 
-  expand(v?: string) { return this.p('_expand', v); }
+  expand(v?: string): UrlBuilder { return this.p('_expand', v); }
 
-  embed(v?: string) { return this.p('_embed', v); }
+  embed(v?: string): UrlBuilder { return this.p('_embed', v); }
 }
 
 // export const isUrlBuilder = (arg?: any): arg is UrlBuilder => !!arg;
