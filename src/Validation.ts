@@ -1,4 +1,3 @@
-
 import Ajv, { ValidateFunction } from 'ajv';
 import { JSONType } from '.';
 
@@ -10,9 +9,9 @@ export class Validation {
     ajv.addKeyword('propertyOrder'); // from TJS
     ajv.addSchema(schema);
 
-    const keys = Object.keys(schema.definitions).map(k => k.toLowerCase()); // [post, ]
-    keys.forEach(k => {
-      this.validation[k] = ajv.getSchema('#/definitions/' + this.key2DefinitionName(k))!;
+    const keys = Object.keys(schema.definitions).map((k) => k.toLowerCase()); // [post, ]
+    keys.forEach((k) => {
+      this.validation[k] = ajv.getSchema(`#/definitions/${this.key2DefinitionName(k)}`)!;
     });
   }
 
@@ -21,7 +20,7 @@ export class Validation {
   }
 
   table2DefinitionName(t: string): string {
-    return (t[0].toUpperCase() + t.substr(1, t.length - 2));  // posts -> Post
+    return (t[0].toUpperCase() + t.substr(1, t.length - 2)); // posts -> Post
   }
 
   getOwnProperties(name: string): { [k: string]: any } {
@@ -41,8 +40,8 @@ export class Validation {
     Object.entries(ps).forEach(([k, v]) => {
       const type = v.type as JSONType;
       if (
-        !v.$ref && // 
-        !(type === 'array' && v.items?.$ref) // array items
+        !v.$ref //
+        && !(type === 'array' && v.items?.$ref) // array items
       ) {
         fields.push(k);
       }
@@ -50,7 +49,7 @@ export class Validation {
     // keep definition order
     const order = (this.schema.definitions as any)[this.table2DefinitionName(name)]?.propertyOrder as string[] ?? [];
     const retFields: string[] = [];
-    order.forEach(f => fields.includes(f) && retFields.push(f));
+    order.forEach((f) => fields.includes(f) && retFields.push(f));
 
     return retFields;
   }
@@ -63,19 +62,21 @@ export class Validation {
   getDefaultItem(name: string): any {
     const ps = this.getOwnProperties(name);
     const props = {} as any;
-    if (ps) Object.entries(ps).forEach(([k, v]) => {
-      const type = v.type as JSONType;
-      switch (type) {
-        case 'number':
-        case 'integer': props[k] = 0; break;
-        case 'string': props[k] = ''; break;
-        case 'boolean': props[k] = false; break;
-        case 'object': props[k] = {}; break;
-        case 'array': props[k] = []; break;
-        case 'null': props[k] = null; break;
-        default: break;
-      }
-    });
+    if (ps) {
+      Object.entries(ps).forEach(([k, v]) => {
+        const type = v.type as JSONType;
+        switch (type) {
+          case 'number':
+          case 'integer': props[k] = 0; break;
+          case 'string': props[k] = ''; break;
+          case 'boolean': props[k] = false; break;
+          case 'object': props[k] = {}; break;
+          case 'array': props[k] = []; break;
+          case 'null': props[k] = null; break;
+          default: break;
+        }
+      });
+    }
     return props;
   }
 }

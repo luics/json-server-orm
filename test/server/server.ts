@@ -7,7 +7,7 @@ let server: Server;
 export function start(db?: string | object, port?: number, isProduction?: boolean) {
   db = db || process.argv[2] || 'db.json';
 
-  port = port || parseInt(process.env.PORT || '3000');
+  port = port || parseInt(process.env.PORT || '3000', 10);
   if (isProduction === undefined) isProduction = process.env.NODE_ENV === 'production';
 
   const app = jsonServer.create();
@@ -16,9 +16,10 @@ export function start(db?: string | object, port?: number, isProduction?: boolea
     logger: !isProduction,
   });
   const router = jsonServer.router(
+    // eslint-disable-next-line no-nested-ternary
     typeof db === 'object'
       ? db
-      : db.startsWith('/') ? db : path.join(__dirname, db)
+      : db.startsWith('/') ? db : path.join(__dirname, db),
   );
 
   // Set default middlewares (logger, static, cors and no-cache)

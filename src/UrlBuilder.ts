@@ -14,7 +14,7 @@ export class UrlBuilder {
   }
 
   toString() {
-    return this.base + this.apiName + (this.params.length ? ('?' + this.params.join('&')) : '');
+    return this.base + this.apiName + (this.params.length ? (`?${this.params.join('&')}`) : '');
   }
 
   p(name: string, v?: any) {
@@ -25,29 +25,39 @@ export class UrlBuilder {
       ? v.toString()
       : typeof v === 'symbol'
         ? v.description
-        : (v + '');
+        : (`${v}`);
     this.params.push(`${encodeURIComponent(name)}=${encodeURIComponent(val)}`);
     return this;
   }
 
   id(v?: number) { return this.p('id', v); }
+
   page(v?: number) { return this.p('_page', v); }
+
   limit(v?: number) { return this.p('_limit', v); }
+
   sort(v?: string) { return this.p('_sort', v); }
+
   order(v?: Order) { return this.p('_order', v); }
+
   start(v?: number) { return this.p('_start', v); }
+
   end(v?: number) { return this.p('_end', v); }
 
-  gte(name: string, v?: number) { return this.p(name + '_gte', v); }
-  lte(name: string, v?: number) { return this.p(name + '_lte', v); }
-  ne(name: string, v?: number) { return this.p(name + '_ne', v); }
-  like(name: string, v?: any) { return this.p(name + '_like', v); }
+  gte(name: string, v?: number) { return this.p(`${name}_gte`, v); }
+
+  lte(name: string, v?: number) { return this.p(`${name}_lte`, v); }
+
+  ne(name: string, v?: number) { return this.p(`${name}_ne`, v); }
+
+  like(name: string, v?: any) { return this.p(`${name}_like`, v); }
+
   q(v?: any) { return this.p('q', v); }
 
   expand(v?: string) { return this.p('_expand', v); }
+
   embed(v?: string) { return this.p('_embed', v); }
 }
-
 
 // export const isUrlBuilder = (arg?: any): arg is UrlBuilder => !!arg;
 // Examples

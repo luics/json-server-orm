@@ -2,7 +2,6 @@ import 'mocha';
 import { ok, strictEqual, throws } from 'assert';
 import { UrlBuilder as Builder } from '../src/UrlBuilder';
 
-
 const s = 'http://test.com/api/';
 const t = '123';
 const api = 'post';
@@ -77,5 +76,4 @@ describe('UrlBuilder', () => {
   it('group cases', () => {
     strictEqual(new Builder(s, api, t).page(3).limit(5).toString(), `${p}&_page=3&_limit=5`);
   });
-
 });

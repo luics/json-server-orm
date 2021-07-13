@@ -3,7 +3,6 @@ import { ValidationError } from '.';
 import { Schema } from './schema';
 
 export class Base<T extends Schema> {
-  
   public isPlural = true;
 
   constructor(

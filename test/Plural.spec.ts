@@ -131,8 +131,8 @@ describe('Table(Plural)', () => {
   });
 
   it('db.posts.add() +validation', async () => {
-    rejects(async () => await db.posts.add({ title: 'post from test' })); // ValidationError
-    rejects(async () => await db.posts.add({ title: 'post', userId: 1 }));
+    rejects(async () => db.posts.add({ title: 'post from test' })); // ValidationError
+    rejects(async () => db.posts.add({ title: 'post', userId: 1 }));
   });
 
   it('db.posts.update()', async () => {
@@ -166,8 +166,8 @@ describe('Table(Plural)', () => {
   });
 
   it('db.comments.add() +validation', async () => {
-    rejects(async () => await db.comments.add({ body: '12345' }));
-    rejects(async () => await db.comments.add({ body: '1234', postId: 1 }));
+    rejects(async () => db.comments.add({ body: '12345' }));
+    rejects(async () => db.comments.add({ body: '1234', postId: 1 }));
   });
 
   it('db.comments.update()', async () => {
@@ -185,12 +185,11 @@ describe('Table(Plural)', () => {
   });
 
   it('db.users.add() +validation', async () => {
-    rejects(async () => await db.users.add({ name: 'test', }));
-    rejects(async () => await db.users.add({ name: '', token: '123' }));
+    rejects(async () => db.users.add({ name: 'test' }));
+    rejects(async () => db.users.add({ name: '', token: '123' }));
   });
 
   it('db.users.update()', async () => {
     strictEqual((await db.users.update({ id: 1, name: '1', token: '123' }))?.name, '1');
   });
-
 });

@@ -1,4 +1,6 @@
-import { KVO, NameValue, OperatorNameValue, Order } from './types';
+import {
+  KVO, NameValue, OperatorNameValue, Order,
+} from './types';
 
 /**
  * @see https://github.com/typicode/json-server#routes

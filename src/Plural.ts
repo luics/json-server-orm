@@ -5,12 +5,10 @@ import { QueryOptions } from './QueryOptions';
 import { PluralSchema } from '.';
 
 export class Plural<T extends PluralSchema> extends Base<T> {
-
   public async count(opts?: QueryOptions): Promise<number> {
     try {
       const url = this.getUrl(opts)
-        .limit(opts?.limit ?? 1)
-        ;
+        .limit(opts?.limit ?? 1);
       const res = (await axios.head(url.toString()));
       return parseInt(res.headers['x-total-count'] ?? '0', 10);
     } catch (error) {
@@ -75,18 +73,17 @@ export class Plural<T extends PluralSchema> extends Base<T> {
       .order(opts?.order)
       .start(opts?.start)
       .end(opts?.end)
-      .q(opts?.q)
-      ;
-    if (opts?.ids) opts.ids.forEach(id => url.id(id));
-    if (opts?.gte) opts.gte.forEach(it => url.gte(it.name, it.value));
-    if (opts?.lte) opts.lte.forEach(it => url.lte(it.name, it.value));
-    if (opts?.ne) opts.ne.forEach(it => url.ne(it.name, it.value));
-    if (opts?.like) opts.like.forEach(it => url.like(it.name, it.value));
-    if (opts?.embed) opts.embed.forEach(it => url.embed(it));
-    if (opts?.expand) opts.expand.forEach(it => url.expand(it));
+      .q(opts?.q);
+    if (opts?.ids) opts.ids.forEach((id) => url.id(id));
+    if (opts?.gte) opts.gte.forEach((it) => url.gte(it.name, it.value));
+    if (opts?.lte) opts.lte.forEach((it) => url.lte(it.name, it.value));
+    if (opts?.ne) opts.ne.forEach((it) => url.ne(it.name, it.value));
+    if (opts?.like) opts.like.forEach((it) => url.like(it.name, it.value));
+    if (opts?.embed) opts.embed.forEach((it) => url.embed(it));
+    if (opts?.expand) opts.expand.forEach((it) => url.expand(it));
     if (opts?.param) {
-      const param = opts.param;
-      if (Array.isArray(param)) param.forEach(it => url.p(it.name, it.value));
+      const { param } = opts;
+      if (Array.isArray(param)) param.forEach((it) => url.p(it.name, it.value));
       else Object.entries(param).forEach(([name, value]) => url.p(name, value));
     }
 
