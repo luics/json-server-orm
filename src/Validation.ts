@@ -1,7 +1,7 @@
 import Ajv, { ValidateFunction } from 'ajv';
 import { JSONType } from '.';
 
-export class Validation {
+export default class Validation {
   validation: { [key: string]: ValidateFunction<any> } = {};
 
   constructor(public schema: any) {
@@ -11,15 +11,15 @@ export class Validation {
 
     const keys = Object.keys(schema.definitions).map((k) => k.toLowerCase()); // [post, ]
     keys.forEach((k) => {
-      this.validation[k] = ajv.getSchema(`#/definitions/${this.key2DefinitionName(k)}`)!;
+      this.validation[k] = ajv.getSchema(`#/definitions/${Validation.key2DefinitionName(k)}`)!;
     });
   }
 
-  key2DefinitionName(k: string): string {
+  static key2DefinitionName(k: string): string {
     return (k[0].toUpperCase() + k.substr(1)); // post -> Post
   }
 
-  table2DefinitionName(t: string): string {
+  static table2DefinitionName(t: string): string {
     return (t[0].toUpperCase() + t.substr(1, t.length - 2)); // posts -> Post
   }
 
@@ -28,7 +28,11 @@ export class Validation {
     const allProps = this.getProperties(name);
     const props = {} as any;
 
-    if (allProps) fields?.forEach((f) => props[f] = allProps[f]);
+    if (allProps) {
+      fields?.forEach((f) => {
+        props[f] = allProps[f];
+      });
+    }
     return props;
   }
 
@@ -47,7 +51,8 @@ export class Validation {
       }
     });
     // keep definition order
-    const order = (this.schema.definitions as any)[this.table2DefinitionName(name)]?.propertyOrder as string[] ?? [];
+    const order = (this.schema.definitions as any)[Validation.table2DefinitionName(name)]
+      ?.propertyOrder as string[] ?? [];
     const retFields: string[] = [];
     order.forEach((f) => fields.includes(f) && retFields.push(f));
 
@@ -55,7 +60,8 @@ export class Validation {
   }
 
   private getProperties(name: string): { [k: string]: any } {
-    return (this.schema.definitions as any)[this.table2DefinitionName(name)]?.properties as { [k: string]: any } ?? {};
+    return (this.schema.definitions as any)[Validation.table2DefinitionName(name)]
+      ?.properties as { [k: string]: any } ?? {};
   }
 
   // @see https://ajv.js.org/guide/modifying-data.html#assigning-defaults

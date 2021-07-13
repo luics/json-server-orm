@@ -1,68 +1,47 @@
 import axios from 'axios';
-import { Base } from './Base';
-import { UrlBuilder } from './UrlBuilder';
+import Base from './Base';
+import UrlBuilder from './UrlBuilder';
 import { QueryOptions } from './QueryOptions';
 import { PluralSchema } from '.';
 
-export class Plural<T extends PluralSchema> extends Base<T> {
+export default class Plural<T extends PluralSchema> extends Base<T> {
   public async count(opts?: QueryOptions): Promise<number> {
-    try {
-      const url = this.getUrl(opts)
-        .limit(opts?.limit ?? 1);
-      const res = (await axios.head(url.toString()));
-      return parseInt(res.headers['x-total-count'] ?? '0', 10);
-    } catch (error) {
-      throw error;
-    }
+    const url = this.getUrl(opts)
+      .limit(opts?.limit ?? 1);
+    const res = (await axios.head(url.toString()));
+    return parseInt(res.headers['x-total-count'] ?? '0', 10);
   }
 
   public async all(opts?: QueryOptions): Promise<T[]> {
-    try {
-      const url = this.getUrl(opts);
-      const res = (await axios.get(url.toString()));
-      return res.data;
-    } catch (error) {
-      throw error;
-    }
+    const url = this.getUrl(opts);
+    const res = (await axios.get(url.toString()));
+    return res.data;
   }
 
   public async one(id: number): Promise<T | undefined> {
     const items = await this.all({ ids: [id] });
-    if (items.length) return items[0];
+    return items[0];
   }
 
   public async add(data: any): Promise<T> {
-    try {
-      this.val({ ...data, id: 0 });
-      const url = new UrlBuilder(this.server, this.api, this.token).toString();
-      const res = (await axios.post(url, data));
+    this.val({ ...data, id: 0 });
+    const url = new UrlBuilder(this.server, this.api, this.token).toString();
+    const res = (await axios.post(url, data));
 
-      return res.data;
-    } catch (error) {
-      // console.error(error.message, error.response ?? '');
-      throw error;
-    }
+    return res.data;
   }
 
   public async update(data: T): Promise<T> {
-    try {
-      this.val(data);
-      const url = new UrlBuilder(this.server, `${this.api}/${data.id}`, this.token).toString();
-      const res = (await axios.patch(url, data));
+    this.val(data);
+    const url = new UrlBuilder(this.server, `${this.api}/${data.id}`, this.token).toString();
+    const res = (await axios.patch(url, data));
 
-      return res.data;
-    } catch (error) {
-      throw error;
-    }
+    return res.data;
   }
 
   public async delete(id: number): Promise<void> {
-    try {
-      const url = new UrlBuilder(this.server, `${this.api}/${id}`, this.token).toString();
-      await axios.delete(url);
-    } catch (error) {
-      throw error;
-    }
+    const url = new UrlBuilder(this.server, `${this.api}/${id}`, this.token).toString();
+    await axios.delete(url);
   }
 
   private getUrl(opts?: QueryOptions): UrlBuilder {

@@ -1,6 +1,6 @@
 import { Order } from '.';
 
-export class UrlBuilder {
+export default class UrlBuilder {
   private params: string[] = [];
 
   constructor(
@@ -21,6 +21,7 @@ export class UrlBuilder {
     if (name === '') throw new Error('name is empty');
     if (v === undefined) return this;
 
+    // eslint-disable-next-line no-nested-ternary
     const val = (typeof v === 'object' && v !== null && 'toString' in v)
       ? v.toString()
       : typeof v === 'symbol'

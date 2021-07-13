@@ -1,6 +1,6 @@
 import 'mocha';
 import { ok, strictEqual, throws } from 'assert';
-import { UrlBuilder as Builder } from '../src/UrlBuilder';
+import Builder from '../src/UrlBuilder';
 
 const s = 'http://test.com/api/';
 const t = '123';

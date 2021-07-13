@@ -1,6 +1,6 @@
 {
   "name": "json-server-orm",
-  "version": "0.4.6",
+  "version": "0.4.7",
   "description": "",
   "author": "luics.xu@gmail.com",
   "license": "MIT",
@@ -21,7 +21,7 @@
     "clear": "printf \"\\33c\\e[3J\"",
     "lint": "eslint \"{src,test}/**/*.{ts,tsx,js}\"",
     "lint:dev": "nodemon --watch .eslintrc.json --exec \"run-s clear lint\"",
-    "prepublish": "rm -rf cjs esm && npm run dist:lib",
+    "prepare": "rm -rf cjs esm && npm run dist:lib",
     "dist:lib": "tsc -p tsconfig.cjs.json && tsc -p tsconfig.esm.json",
     "jsonschema": "npx typescript-json-schema 'test/server/schema.ts' '*' -o 'test/server/schema.json' --required --propOrder"
   },
