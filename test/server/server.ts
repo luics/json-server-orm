@@ -1,3 +1,5 @@
+/* eslint-disable no-param-reassign */
+/* eslint-disable no-console */
 import path from 'path';
 import { Server } from 'http';
 import jsonServer from 'json-server';

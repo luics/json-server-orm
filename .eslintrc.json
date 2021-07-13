@@ -1,5 +1,5 @@
 {
-  "env": { "browser": true, "mocha": true, "es2021": true },
+  "env": { "browser": true, "node": true, "mocha": true, "es2021": true },
   "extends": ["airbnb-base"],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
@@ -9,14 +9,10 @@
   "plugins": ["@typescript-eslint"],
   "settings": {
     "import/resolver": {
-      "node": { "extensions": [".js", ".jsx", ".ts", ".tsx"] }
+      "node": { "extensions": [".js", ".ts", ".tsx"] }
     }
   },
   "rules": {
-    "no-console": "off",
-    "no-unused-vars": "off",
-    "max-len": ["error", 120],
-    "no-param-reassign": "off",
     "import/extensions": "off"
   }
 }
