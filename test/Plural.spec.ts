@@ -1,6 +1,6 @@
 import 'mocha';
 import { ok, strictEqual, rejects } from 'assert';
-import { Table } from '../src';
+import { Plural } from '../src';
 import * as Server from './server/server';
 import dbJson from './server/db.json';
 import { Post, User, Comment } from './server/schema';
@@ -9,9 +9,9 @@ import { validation } from './server/validation';
 const port = 31989;
 const server = `http://localhost:${port}/api/`;
 const db = {
-  posts: new Table<Post>(server, 'posts', validation.post),
-  users: new Table<User>(server, 'users', validation.user),
-  comments: new Table<Comment>(server, 'comments', validation.comment),
+  posts: new Plural<Post>(server, 'posts', validation.post),
+  users: new Plural<User>(server, 'users', validation.user),
+  comments: new Plural<Comment>(server, 'comments', validation.comment),
 };
 const len = dbJson.posts.length;
 
