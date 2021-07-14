@@ -1,12 +1,11 @@
 {
   "name": "json-server-orm",
-  "version": "0.4.10",
+  "version": "0.4.11",
   "description": "",
   "author": "luics.xu@gmail.com",
   "license": "MIT",
-  "type": "module",
-  "main": "esm/index.js",
-  "types": "esm/index.d.js",
+  "main": "cjs/index.js",
+  "types": "cjs/index.d.js",
   "files": [
     "cjs",
     "esm"
