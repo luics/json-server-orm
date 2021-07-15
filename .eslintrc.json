@@ -14,7 +14,8 @@
   },
   "rules": {
     "no-useless-constructor": "off",
-    "import/extensions": "off",
-    "@typescript-eslint/no-explicit-any": "off"
+    "@typescript-eslint/no-useless-constructor": "error",
+    "@typescript-eslint/no-explicit-any": "off",
+    "import/extensions": "off"
   }
 }
