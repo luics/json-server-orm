@@ -5,11 +5,8 @@ import { Schema } from './schema';
 export default class Base<T extends Schema> {
   public isPlural = true;
 
-  // eslint-disable-next-line no-useless-constructor
   constructor(public server: string, public api: string,
-    public validate?: ValidateFunction<T>, public token?: string) {
-    //
-  }
+    public validate?: ValidateFunction<T>, public token?: string) { }
 
   protected val(d: unknown): void {
     if (!this.validate) return;
