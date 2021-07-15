@@ -1,4 +1,3 @@
-/* eslint-disable no-use-before-define */
 import { PluralSchema, SingularSchema } from '../../src/schema';
 
 export interface Post extends PluralSchema {

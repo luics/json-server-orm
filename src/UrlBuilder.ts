@@ -3,7 +3,6 @@ import { Order } from '.';
 export default class UrlBuilder {
   private params: string[] = [];
 
-  // eslint-disable-next-line no-unused-vars
   constructor(public base: string, public apiName: string, public token?: string) {
     if (this.base === undefined) throw new Error('url base is empty');
     if (!this.base.endsWith('/')) this.base += '/';
