@@ -17,10 +17,7 @@ export function start(db?: string | any, port?: number, isProduction?: boolean):
     logger: !isProduction,
   });
   const router = jsonServer.router(
-    // eslint-disable-next-line no-nested-ternary
-    typeof db === 'object'
-      ? db
-      : db.startsWith('/') ? db : path.join(__dirname, db),
+    (typeof db !== 'object' && !db.startsWith('/')) ? path.join(__dirname, db) : db,
   );
 
   // Set default middlewares (logger, static, cors and no-cache)

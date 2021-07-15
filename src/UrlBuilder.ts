@@ -17,12 +17,11 @@ export default class UrlBuilder {
     if (name === '') throw new Error('name is empty');
     if (v === undefined) return this;
 
-    // eslint-disable-next-line no-nested-ternary
-    const val = (typeof v === 'object' && v !== null && 'toString' in v)
-      ? v.toString()
-      : typeof v === 'symbol'
-        ? v.description
-        : (`${v}`);
+    let val;
+    if (typeof v === 'object' && v !== null && 'toString' in v) val = v.toString();
+    else if (typeof v === 'symbol') val = v.description;
+    else val = `${v}`;
+
     this.params.push(`${encodeURIComponent(name)}=${encodeURIComponent(val ?? '')}`);
     return this;
   }
