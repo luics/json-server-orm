@@ -12,7 +12,7 @@ const db = {
   profile: new Singular<Profile>(server, 'profile', validation.profile),
 };
 
-describe('Object(Singular)', () => {
+describe('Singular', () => {
   before(async () => Server.start(dbJson, port, false));
 
   after(async () => Server.close());

@@ -15,7 +15,7 @@ const db = {
 };
 const len = dbJson.posts.length;
 
-describe('Table(Plural)', () => {
+describe('Plural', () => {
   before(async () => Server.start(dbJson, port, false));
 
   after(async () => Server.close());

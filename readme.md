@@ -2,4 +2,5 @@
 
 ## API
 
-see `test/Table.spec.ts`
+* [Plural](test/Plural.spec.ts)
+* [Singular](test/Singular.spec.ts)
