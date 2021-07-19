@@ -37,7 +37,10 @@ describe('UrlBuilder', () => {
 
   it('expand()', () => {
     strictEqual(new Builder(s, api, t).expand('user').toString(), `${p}&_expand=user`);
-    strictEqual(new Builder(s, api, t).expand('user').expand('tag').toString(), `${p}&_expand=user&_expand=tag`);
+    strictEqual(
+      new Builder(s, api, t).expand('user').expand('tag').toString(),
+      `${p}&_expand=user&_expand=tag`
+    );
     strictEqual(new Builder(s, api, t).expand().toString(), `${p}`);
     strictEqual(new Builder(s, api, t).expand(undefined).toString(), `${p}`);
   });
@@ -61,7 +64,10 @@ describe('UrlBuilder', () => {
   });
 
   it('gte/lte/ne()', () => {
-    strictEqual(new Builder(s, api, t).gte('id', 1).lte('id', 3).toString(), `${p}&id_gte=1&id_lte=3`);
+    strictEqual(
+      new Builder(s, api, t).gte('id', 1).lte('id', 3).toString(),
+      `${p}&id_gte=1&id_lte=3`
+    );
     strictEqual(new Builder(s, api, t).ne('id', 1).toString(), `${p}&id_ne=1`);
   });
 

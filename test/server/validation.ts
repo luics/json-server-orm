@@ -9,7 +9,7 @@ ajv.addSchema(schema);
 const keys = Object.keys(schema.definitions).map((k) => k.toLowerCase());
 
 // post -> Post
-export const key2DefinitionName = (k: string): string => (k[0].toUpperCase() + k.substr(1));
+export const key2DefinitionName = (k: string): string => k[0].toUpperCase() + k.substr(1);
 
 export const validation: { [key: string]: ValidateFunction<any> } = {};
 

@@ -23,8 +23,8 @@ describe('Singular', () => {
   });
 
   it('db.profile.one()', async () => {
-    ok((await db.profile.one()));
-    strictEqual((await db.profile.one()).name, 'luics\'s blog');
+    ok(await db.profile.one());
+    strictEqual((await db.profile.one()).name, "luics's blog");
   });
 
   it('db.profile.update()', async () => {

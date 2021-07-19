@@ -17,7 +17,7 @@ export function start(db?: string | any, port?: number, isProduction?: boolean):
     logger: !isProduction,
   });
   const router = jsonServer.router(
-    (typeof db !== 'object' && !db.startsWith('/')) ? path.join(__dirname, db) : db,
+    typeof db !== 'object' && !db.startsWith('/') ? path.join(__dirname, db) : db
   );
 
   // Set default middlewares (logger, static, cors and no-cache)
@@ -34,7 +34,12 @@ export function start(db?: string | any, port?: number, isProduction?: boolean):
   // Start server
   //
   server = app.listen(port, () => {
-    console.log('JSON Server is running at', port, 'with', typeof db === 'string' ? db : '[object]');
+    console.log(
+      'JSON Server is running at',
+      port,
+      'with',
+      typeof db === 'string' ? db : '[object]'
+    );
   });
 }
 

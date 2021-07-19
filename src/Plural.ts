@@ -6,15 +6,14 @@ import { PluralSchema } from '.';
 
 export default class Plural<T extends PluralSchema> extends Base<T> {
   public async count(opts?: QueryOptions): Promise<number> {
-    const url = this.getUrl(opts)
-      .limit(opts?.limit ?? 1);
-    const res = (await axios.head(url.toString()));
+    const url = this.getUrl(opts).limit(opts?.limit ?? 1);
+    const res = await axios.head(url.toString());
     return parseInt(res.headers['x-total-count'] ?? '0', 10);
   }
 
   public async all(opts?: QueryOptions): Promise<T[]> {
     const url = this.getUrl(opts);
-    const res = (await axios.get(url.toString()));
+    const res = await axios.get(url.toString());
     return res.data;
   }
 
@@ -26,7 +25,7 @@ export default class Plural<T extends PluralSchema> extends Base<T> {
   public async add(data: unknown): Promise<T> {
     this.val({ ...(data as any), id: 0 });
     const url = new UrlBuilder(this.server, this.api, this.token).toString();
-    const res = (await axios.post(url, data));
+    const res = await axios.post(url, data);
 
     return res.data;
   }
@@ -34,7 +33,7 @@ export default class Plural<T extends PluralSchema> extends Base<T> {
   public async update(data: T): Promise<T> {
     this.val(data);
     const url = new UrlBuilder(this.server, `${this.api}/${data.id}`, this.token).toString();
-    const res = (await axios.patch(url, data));
+    const res = await axios.patch(url, data);
 
     return res.data;
   }

@@ -5,21 +5,21 @@ export interface Post extends PluralSchema {
    * @minLength 5
    * @maxLength 50
    */
-  title: string,
+  title: string;
   /**
    * @TJS-type integer
    */
-  userId: number,
+  userId: number;
 
-  tags?: string[],
+  tags?: string[];
   // eslint-disable-next-line @typescript-eslint/ban-types
-  meta?: object,
-  private?: boolean,
-  weight?: number,
-  test?: null,
+  meta?: object;
+  private?: boolean;
+  weight?: number;
+  test?: null;
 
-  user?: User,
-  comments?: Comment[],
+  user?: User;
+  comments?: Comment[];
 }
 
 export interface User extends PluralSchema {
@@ -27,9 +27,9 @@ export interface User extends PluralSchema {
    * @minLength 1
    * @maxLength 20
    */
-  name: string,
-  token: string,
-  posts?: Post[],
+  name: string;
+  token: string;
+  posts?: Post[];
 }
 
 export interface Comment extends PluralSchema {
@@ -37,9 +37,9 @@ export interface Comment extends PluralSchema {
    * @minLength 5
    * @maxLength 140
    */
-  body: string,
-  postId: number,
-  post?: Post,
+  body: string;
+  postId: number;
+  post?: Post;
 }
 
 export interface Profile extends SingularSchema {
@@ -47,6 +47,6 @@ export interface Profile extends SingularSchema {
    * @minLength 5
    * @maxLength 20
    */
-  name: string,
-  desc?: string,
+  name: string;
+  desc?: string;
 }

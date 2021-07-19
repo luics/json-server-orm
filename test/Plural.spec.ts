@@ -87,15 +87,47 @@ describe('Plural', () => {
   });
 
   it('db.posts.all({ gte, lte })', async () => {
-    strictEqual((await db.posts.all({ gte: [{ name: 'id', value: 1 }], lte: [{ name: 'id', value: 5 }] })).length, 5);
-    strictEqual((await db.posts.all({ gte: [{ name: 'id', value: 1 }], lte: [{ name: 'id', value: 5 }] }))[0].id, 1);
-    strictEqual((await db.posts.all({ gte: [{ name: 'id', value: 1 }], lte: [{ name: 'id', value: 5 }] }))[4].id, 5);
+    strictEqual(
+      (await db.posts.all({ gte: [{ name: 'id', value: 1 }], lte: [{ name: 'id', value: 5 }] }))
+        .length,
+      5
+    );
+    strictEqual(
+      (await db.posts.all({ gte: [{ name: 'id', value: 1 }], lte: [{ name: 'id', value: 5 }] }))[0]
+        .id,
+      1
+    );
+    strictEqual(
+      (await db.posts.all({ gte: [{ name: 'id', value: 1 }], lte: [{ name: 'id', value: 5 }] }))[4]
+        .id,
+      5
+    );
   });
 
   it('db.posts.all({ ne })', async () => {
     strictEqual((await db.posts.all({ ne: [{ name: 'id', value: 1 }] })).length, len - 1);
-    strictEqual((await db.posts.all({ ne: [{ name: 'id', value: 1 }, { name: 'id', value: 2 }] })).length, len - 2);
-    strictEqual((await db.posts.all({ ne: [{ name: 'id', value: 1 }, { name: 'id', value: 10000 }] })).length, len - 1);
+    strictEqual(
+      (
+        await db.posts.all({
+          ne: [
+            { name: 'id', value: 1 },
+            { name: 'id', value: 2 },
+          ],
+        })
+      ).length,
+      len - 2
+    );
+    strictEqual(
+      (
+        await db.posts.all({
+          ne: [
+            { name: 'id', value: 1 },
+            { name: 'id', value: 10000 },
+          ],
+        })
+      ).length,
+      len - 1
+    );
   });
 
   it('db.posts.all({ like })', async () => {
@@ -141,19 +173,27 @@ describe('Plural', () => {
   });
 
   it('db.posts.count()', async () => {
-    strictEqual((await db.posts.count()), len);
+    strictEqual(await db.posts.count(), len);
   });
 
   it('db.comments.count()', async () => {
-    strictEqual((await db.comments.count()), 5);
+    strictEqual(await db.comments.count(), 5);
   });
 
   it('db.comments.all() +param array', async () => {
     strictEqual((await db.comments.all()).length, 5);
     strictEqual((await db.comments.all({ param: [{ name: 'postId', value: 1 }] })).length, 3);
-    strictEqual((await db.comments.all({
-      param: [{ name: 'postId', value: 1 }, { name: 'postId', value: 2 }],
-    })).length, 4);
+    strictEqual(
+      (
+        await db.comments.all({
+          param: [
+            { name: 'postId', value: 1 },
+            { name: 'postId', value: 2 },
+          ],
+        })
+      ).length,
+      4
+    );
   });
 
   it('db.comments.all() +param object', async () => {
@@ -177,7 +217,7 @@ describe('Plural', () => {
   });
 
   it('db.users.count()', async () => {
-    strictEqual((await db.users.count()), 2);
+    strictEqual(await db.users.count(), 2);
   });
 
   it('db.users.add/delete()', async () => {
