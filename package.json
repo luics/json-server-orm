@@ -16,7 +16,7 @@
   ],
   "scripts": {
     "start:server": "npx ts-node test/server/server.ts",
-    "lint": "eslint \"?(src|test)/**/*.?(js|ts|tsx)\"",
+    "lint": "eslint \"@(src|test)/**/*.@(js|ts|tsx)\"",
     "test": "mocha -r ts-node/register test/**/*.spec.ts",
     "test:dev": "nodemon --watch ./ --ext ts --delay 0 --exec 'printf \"\\33c\\e[3J\" && npm run test'",
     "jsonschema": "npx typescript-json-schema 'test/server/schema.ts' '*' -o 'test/server/schema.json' --required --propOrder",
