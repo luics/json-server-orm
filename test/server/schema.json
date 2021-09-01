@@ -2,6 +2,7 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "definitions": {
         "Comment": {
+            "additionalProperties": false,
             "properties": {
                 "body": {
                     "maxLength": 140,
@@ -9,7 +10,7 @@
                     "type": "string"
                 },
                 "id": {
-                    "type": "number"
+                    "type": "integer"
                 },
                 "post": {
                     "$ref": "#/definitions/Post"
@@ -32,6 +33,7 @@
             "type": "object"
         },
         "Post": {
+            "additionalProperties": false,
             "properties": {
                 "comments": {
                     "items": {
@@ -40,7 +42,7 @@
                     "type": "array"
                 },
                 "id": {
-                    "type": "number"
+                    "type": "integer"
                 },
                 "meta": {
                     "additionalProperties": true,
@@ -95,6 +97,7 @@
             "type": "object"
         },
         "Profile": {
+            "additionalProperties": true,
             "properties": {
                 "desc": {
                     "type": "string"
@@ -115,9 +118,10 @@
             "type": "object"
         },
         "User": {
+            "additionalProperties": false,
             "properties": {
                 "id": {
-                    "type": "number"
+                    "type": "integer"
                 },
                 "name": {
                     "maxLength": 20,

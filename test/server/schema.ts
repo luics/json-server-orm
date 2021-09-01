@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import { PluralSchema, SingularSchema } from '../../src/schema';
 
 export interface Post extends PluralSchema {
@@ -12,7 +13,6 @@ export interface Post extends PluralSchema {
   userId: number;
 
   tags?: string[];
-  // eslint-disable-next-line @typescript-eslint/ban-types
   meta?: object;
   private?: boolean;
   weight?: number;
@@ -42,6 +42,9 @@ export interface Comment extends PluralSchema {
   post?: Post;
 }
 
+/**
+ * @additionalProperties true
+ */
 export interface Profile extends SingularSchema {
   /**
    * @minLength 5
