@@ -7,15 +7,26 @@ import { Profile } from './server/schema';
 import { validation } from './server/validation';
 
 const port = 31989;
-const server = `http://localhost:${port}/api/`;
+const s = `http://localhost:${port}/api/`;
 const db = {
-  profile: new Singular<Profile>(server, 'profile', validation.profile),
+  profile: new Singular<Profile>(s, 'profile', validation.profile),
 };
+const server = new Server();
 
 describe('Singular', () => {
-  before(async () => Server.start(dbJson, port, false));
+  before(async () =>
+    server.start({
+      watch: dbJson,
+      port,
+      schema: undefined,
+      level: undefined,
+      staticDir: undefined,
+      isProduction: false,
+      token: undefined,
+    })
+  );
 
-  after(async () => Server.close());
+  after(async () => server.close());
 
   it('init', async () => {
     ok(db);
