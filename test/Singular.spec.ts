@@ -1,7 +1,7 @@
 import 'mocha';
 import { ok, rejects, strictEqual } from 'assert';
+import Server from '@luics/json-server-simple';
 import { Singular } from '../src';
-import * as Server from './server/server';
 import dbJson from './server/db.json';
 import { Profile } from './server/schema';
 import { validation } from './server/validation';
