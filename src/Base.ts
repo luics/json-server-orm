@@ -9,7 +9,8 @@ export default class Base<T extends Schema> {
     public server: string,
     public api: string,
     public validate?: ValidateFunction<T>,
-    public token?: string
+    public token?: string,
+    public isMysqlServer?: boolean
   ) {}
 
   protected val(d: unknown): void {

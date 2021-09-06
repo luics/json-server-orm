@@ -2,31 +2,26 @@ import http from 'http';
 import { ok, rejects, strictEqual } from 'assert';
 import 'mocha';
 import getJsonServerApp from '@luics/json-server-simple';
+import { getMysqlServerApp } from '@luics/mysql-server';
 import { Singular } from '../src';
 import dbJson from './server/db.json';
 import { Profile } from './server/schema';
 import { validation } from './server/validation';
+import config from '../local.config.json';
 
+const { mysql: mysqlConfig } = config;
 const port = 31989;
 const s = `http://localhost:${port}/api/`;
+const isMysqlServer = false;
 const db = {
-  profile: new Singular<Profile>(s, 'profile', validation.profile),
+  profile: new Singular<Profile>(s, 'profile', validation.profile, '', isMysqlServer),
 };
-const mysqlMode = false;
 let app: any;
 let server: http.Server;
-if (!mysqlMode) {
+if (!isMysqlServer) {
   app = getJsonServerApp({ watch: dbJson });
 } else {
-  // TODO mysql-server app
-  // app = getMysqlServerApp({
-  //   watch: dbJson,
-  //   schema: undefined,
-  //   level: undefined,
-  //   staticDir: undefined,
-  //   isProduction: false,
-  //   token: undefined,
-  // });
+  app = getMysqlServerApp({ mysqlConfig });
 }
 
 describe('Singular', () => {

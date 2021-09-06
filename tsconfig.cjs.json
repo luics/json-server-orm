@@ -6,5 +6,5 @@
     "rootDir": "./src",
     "outDir": "./cjs"
   },
-  "exclude": ["test", "esm", "cjs"]
+  "exclude": ["test", "cjs"]
 }

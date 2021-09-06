@@ -8,8 +8,7 @@
   "main": "cjs/index.js",
   "types": "cjs/index.d.js",
   "files": [
-    "cjs",
-    "esm"
+    "cjs"
   ],
   "keywords": [
     "json-server",
@@ -18,10 +17,11 @@
   "scripts": {
     "start:server": "npx ts-node test/server/server.ts",
     "lint": "eslint \"@(src|test)/**/*.@(js|ts|tsx)\"",
-    "test": "mocha -r ts-node/register test/**/*.spec.ts",
+    "_test": "mocha -r ts-node/register test/**/*.spec.ts",
+    "test": "mocha -r ts-node/register test/Singular.spec.ts",
     "test:dev": "nodemon --watch ./ --ext ts --delay 0 --exec \"clear && npm run test\"",
     "jsonschema": "npx typescript-json-schema 'test/server/schema.ts' '*' -o 'test/server/schema.json' --required --propOrder --noExtraProps",
-    "dist": "rm -rf cjs esm && tsc -p tsconfig.cjs.json && tsc -p tsconfig.esm.json",
+    "dist": "rm -rf cjs && tsc -p tsconfig.cjs.json",
     "preversion": "npm run lint && npm test",
     "version": "npm run dist && git add -A .",
     "postversion": "git push && git push --tags"
@@ -37,6 +37,7 @@
   "devDependencies": {
     "@luics/eslint-config": "^0.1.5",
     "@luics/json-server-simple": "^0.4.11",
+    "@luics/mysql-server": "0.0.7",
     "@types/assert": "^1.5.1",
     "@types/json-server": "^0.14.3",
     "@types/mocha": "^7.0.2",
