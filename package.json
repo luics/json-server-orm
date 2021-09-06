@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "@luics/eslint-config": "^0.1.5",
-    "@luics/json-server-simple": "^0.4.8",
+    "@luics/json-server-simple": "^0.4.11",
     "@types/assert": "^1.5.1",
     "@types/json-server": "^0.14.3",
     "@types/mocha": "^7.0.2",

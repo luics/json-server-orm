@@ -1,6 +1,7 @@
-import 'mocha';
+import http from 'http';
 import { ok, rejects, strictEqual } from 'assert';
-import Server from '@luics/json-server-simple';
+import 'mocha';
+import getJsonServerApp from '@luics/json-server-simple';
 import { Singular } from '../src';
 import dbJson from './server/db.json';
 import { Profile } from './server/schema';
@@ -11,22 +12,32 @@ const s = `http://localhost:${port}/api/`;
 const db = {
   profile: new Singular<Profile>(s, 'profile', validation.profile),
 };
-const server = new Server();
+const mysqlMode = false;
+let app: any;
+let server: http.Server;
+if (!mysqlMode) {
+  app = getJsonServerApp({ watch: dbJson });
+} else {
+  // TODO mysql-server app
+  // app = getMysqlServerApp({
+  //   watch: dbJson,
+  //   schema: undefined,
+  //   level: undefined,
+  //   staticDir: undefined,
+  //   isProduction: false,
+  //   token: undefined,
+  // });
+}
 
 describe('Singular', () => {
-  before(async () =>
-    server.start({
-      watch: dbJson,
-      port,
-      schema: undefined,
-      level: undefined,
-      staticDir: undefined,
-      isProduction: false,
-      token: undefined,
-    })
-  );
+  before((done) => {
+    server = http.createServer(app);
+    server.listen(port, done);
+  });
 
-  after(async () => server.close());
+  after(() => {
+    if (server) server.close();
+  });
 
   it('init', async () => {
     ok(db);
