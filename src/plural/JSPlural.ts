@@ -1,8 +1,7 @@
 import axios from 'axios';
-import { UrlBuilder, QueryOptions, PluralSchema } from '..';
-import Base from './Base';
+import { Plural, UrlBuilder, QueryOptions, PluralSchema } from '..';
 
-export default class Plural<T extends PluralSchema> extends Base<T> {
+export default class JSPlural<T extends PluralSchema> extends Plural<T> {
   public async count(opts?: QueryOptions): Promise<number> {
     const url = this.getUrl(opts).limit(opts?.limit ?? 1);
     const res = await axios.head(url.toString());
@@ -41,7 +40,7 @@ export default class Plural<T extends PluralSchema> extends Base<T> {
     await axios.delete(url);
   }
 
-  private getUrl(opts?: QueryOptions): UrlBuilder {
+  protected getUrl(opts?: QueryOptions): UrlBuilder {
     const url = new UrlBuilder(this.server, this.api, this.token)
       .limit(opts?.limit)
       .page(opts?.page)
