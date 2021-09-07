@@ -3,36 +3,33 @@ import { ok, rejects, strictEqual } from 'assert';
 import 'mocha';
 import getJsonServerApp from '@luics/json-server-simple';
 import { getMysqlServerApp } from '@luics/mysql-server';
-import { Singular } from '../src';
+import { Singular, JSSingular, MSSingular } from '../src';
 import dbJson from './server/db.json';
 import { Profile } from './server/schema';
 import { validation } from './server/validation';
 import config from '../local.config.json';
 
-const { mysql: mysqlConfig } = config;
+const my = process.argv.includes('--mysql-server');
+
 const port = 31989;
 const s = `http://localhost:${port}/api/`;
-const isMysqlServer = false;
-const db = {
-  profile: new Singular<Profile>(s, 'profile', validation.profile, '', isMysqlServer),
+const app = my
+  ? getMysqlServerApp({ mysqlConfig: config.mysql })
+  : getJsonServerApp({ watch: dbJson });
+const db: { profile: Singular<Profile> } = {
+  profile: my
+    ? new MSSingular<Profile>(s, 'profile', validation.profile)
+    : new JSSingular<Profile>(s, 'profile', validation.profile),
 };
-let app: any;
 let server: http.Server;
-if (!isMysqlServer) {
-  app = getJsonServerApp({ watch: dbJson });
-} else {
-  app = getMysqlServerApp({ mysqlConfig });
-}
 
-describe('Singular', () => {
+describe(`Singular [${my ? 'mysql-server' : 'json-server'}]`, () => {
   before((done) => {
     server = http.createServer(app);
     server.listen(port, done);
   });
 
-  after(() => {
-    if (server) server.close();
-  });
+  after(() => server && server.close());
 
   it('init', async () => {
     ok(db);
