@@ -1,8 +1,6 @@
 import axios from 'axios';
+import { UrlBuilder, QueryOptions, PluralSchema } from '..';
 import Base from './Base';
-import UrlBuilder from './UrlBuilder';
-import { QueryOptions } from './QueryOptions';
-import { PluralSchema } from '.';
 
 export default class Plural<T extends PluralSchema> extends Base<T> {
   public async count(opts?: QueryOptions): Promise<number> {

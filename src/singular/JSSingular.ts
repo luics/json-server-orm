@@ -1,7 +1,5 @@
 import axios from 'axios';
-import UrlBuilder from '../UrlBuilder';
-import { KVO, SingularSchema } from '..';
-import Singular from './Singular';
+import { Singular, UrlBuilder, KVO, SingularSchema } from '..';
 
 export default class JSSingular<T extends SingularSchema> extends Singular<T> {
   public async one(): Promise<T & KVO> {

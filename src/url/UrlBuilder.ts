@@ -1,4 +1,4 @@
-import { Order } from '.';
+import { Order } from '..';
 
 export default class UrlBuilder {
   private params: string[] = [];

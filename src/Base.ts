@@ -10,7 +10,9 @@ export default class Base<T extends Schema> {
     public api: string,
     public validate?: ValidateFunction<T>,
     public token?: string
-  ) {}
+  ) {
+    if (server.endsWith('/')) this.server = server.substr(0, server.length - 1);
+  }
 
   protected val(d: unknown): void {
     if (!this.validate) return;
