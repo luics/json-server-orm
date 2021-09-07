@@ -19,7 +19,7 @@
     "lint": "eslint \"@(src|test)/**/*.@(js|ts|tsx)\"",
     "_test": "mocha -r ts-node/register test/**/*.spec.ts",
     "test": "mocha -r ts-node/register test/Plural.spec.ts",
-    "test:dev": "nodemon --watch ./ --ext ts --delay 0 --exec 'printf \"\\33c\\e[3J\" && npm run test -- --mysql'",
+    "test:dev": "nodemon --watch ./ --ext ts --delay 0 --exec 'printf \"\\33c\\e[3J\" && npm t  && npm t -- --mysql'",
     "jsonschema": "typescript-json-schema 'test/server/schema.ts' '*' -o 'test/server/schema.json' --required --propOrder --noExtraProps",
     "schema2sql": "schema2sql --input test/server/schema.json --output test/server/schema.sql",
     "data2sql": "data2sql --input test/server/db.json --output test/server/db.sql",

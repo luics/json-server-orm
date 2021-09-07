@@ -1,5 +1,8 @@
+import fs from 'fs';
+import path from 'path';
 import http from 'http';
 import 'mocha';
+import axios from 'axios';
 import { ok, strictEqual, rejects } from 'assert';
 import getJsonServerApp from '@luics/json-server-simple';
 import { getMysqlServerApp } from '@luics/mysql-server';
@@ -12,7 +15,7 @@ import config from '../local.config.json';
 const my = process.argv.includes('--mysql');
 
 const port = 31989;
-const s = `http://localhost:${port}/api/`;
+const s = `http://localhost:${port}/api`;
 const app = my
   ? getMysqlServerApp({ mysqlConfig: config.mysql, level: 'access' })
   : getJsonServerApp({ watch: dbJson });
@@ -30,10 +33,25 @@ let server: http.Server;
 describe(`Plural [${my ? 'mysql-server' : 'json-server'}]`, () => {
   before((done) => {
     server = http.createServer(app);
-    server.listen(port, done);
+    server.listen(port, async () => {
+      if (!my) return done();
+      const sqls = [
+        fs.readFileSync(path.resolve(__dirname, 'server/schema.sql')).toString(),
+        fs.readFileSync(path.resolve(__dirname, 'server/db.sql')).toString(),
+      ].join('\n');
+      await axios.get(`${s}/execute`, {
+        data: sqls,
+        headers: { 'content-type': 'text/plain' },
+      });
+      return done();
+    });
   });
 
-  after(() => server && server.close());
+  after(async () => {
+    if (!server) return;
+    if (my) await axios.get(`${s}/end`);
+    server.close();
+  });
 
   it('init', async () => {
     ok(db);
