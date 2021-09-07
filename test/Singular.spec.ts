@@ -3,10 +3,10 @@ import { ok, rejects, strictEqual } from 'assert';
 import 'mocha';
 import getJsonServerApp from '@luics/json-server-simple';
 import { getMysqlServerApp } from '@luics/mysql-server';
-import { Singular, JSSingular, MSSingular } from '../src';
+import { Singular, JSSingular, MSSingular, Validation } from '../src';
 import dbJson from './server/db.json';
+import schema from './server/schema.json';
 import { Profile } from './server/schema';
-import { validation } from './server/validation';
 import config from '../local.config.json';
 
 const my = process.argv.includes('--mysql-server');
@@ -16,10 +16,11 @@ const s = `http://localhost:${port}/api/`;
 const app = my
   ? getMysqlServerApp({ mysqlConfig: config.mysql })
   : getJsonServerApp({ watch: dbJson });
+const v = new Validation(schema);
 const db: { profile: Singular<Profile> } = {
   profile: my
-    ? new MSSingular<Profile>(s, 'profile', validation.profile)
-    : new JSSingular<Profile>(s, 'profile', validation.profile),
+    ? new MSSingular<Profile>(s, 'profile', v.validation.profile)
+    : new JSSingular<Profile>(s, 'profile', v.validation.profile),
 };
 let server: http.Server;
 

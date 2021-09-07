@@ -38,6 +38,9 @@ export interface Comment extends PluralSchema {
    * @maxLength 140
    */
   body: string;
+  /**
+   * @TJS-type integer
+   */
   postId: number;
   post?: Post;
 }
