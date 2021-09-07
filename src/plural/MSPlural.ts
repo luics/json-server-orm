@@ -8,18 +8,30 @@ const { keys, values, entries } = Object;
 
 export default class JSPlural<T extends PluralSchema> extends Plural<T> {
   public async count(opts?: QueryOptions): Promise<number> {
-    const sql = `SELECT COUNT(id) as \`count\` FROM \`${this.api}\` ${JSPlural.getSql(opts)}`;
-    const url = `${this.server}/query?sql=${enc(sql)}`;
-    const res = await axios.get(url);
+    const sql = `SELECT COUNT(id) as \`count\` FROM \`${this.api}\` ${
+      opts ? JSPlural.getSql(opts) : ''
+    }`;
+    console.log(sql);
+    // const url = `${this.server}/query?sql=${enc(sql)}`;
+    // const res = await axios.get(url);
+    const res = await axios.get(`${this.server}/query`, {
+      data: sql,
+      headers: { 'content-type': 'text/plain' },
+    });
 
     return res.data[0].count;
   }
 
   public async all(opts?: QueryOptions): Promise<T[]> {
-    const sql = `SELECT * FROM \`${this.api}\` ${JSPlural.getSql(opts)}`;
-    const url = `${this.server}/query?sql=${enc(sql)}`;
-    const res = await axios.get(url);
+    const sql = `SELECT * FROM \`${this.api}\` ${opts ? JSPlural.getSql(opts) : ''}`;
     console.log(sql);
+    // FIXME esc %
+    // const url = `${this.server}/query?sql=${enc(sql)}`;
+    // const res = await axios.get(url);
+    const res = await axios.get(`${this.server}/query`, {
+      data: sql,
+      headers: { 'content-type': 'text/plain' },
+    });
     // console.log(res.data);
 
     return res.data;
@@ -42,8 +54,6 @@ export default class JSPlural<T extends PluralSchema> extends Plural<T> {
     const sql = `INSERT INTO \`${this.api}\` (${k}) VALUES (${v})`;
     const url = `${this.server}/query?sql=${enc(sql)}`;
     const res = await axios.get(url);
-    // console.log(sql);
-    // console.log(res.data);
     if (res.data.affectedRows !== 1) throw new Error(`Failed: ${sql}`);
 
     return { ...data, id: res.data.insertId };
@@ -61,8 +71,6 @@ export default class JSPlural<T extends PluralSchema> extends Plural<T> {
     const sql = `UPDATE \`${this.api}\` SET ${sets} WHERE id='${data.id}'`;
     const url = `${this.server}/query?sql=${enc(sql)}`;
     const res = await axios.get(url);
-    // console.log(sql);
-    // console.log(res.data);
     if (res.data.affectedRows !== 1) throw new Error(`Failed: ${sql}`);
 
     return data;
@@ -73,8 +81,6 @@ export default class JSPlural<T extends PluralSchema> extends Plural<T> {
     const url = `${this.server}/query?sql=${enc(sql)}`;
     const res = await axios.get(url);
     if (res.data.affectedRows !== 1) throw new Error(`Failed: ${sql}`);
-    // console.log(sql);
-    // console.log(res.data);
 
     return res.data;
   }
@@ -82,61 +88,98 @@ export default class JSPlural<T extends PluralSchema> extends Plural<T> {
   /**
    * @see https://gist.github.com/bradtraversy/c831baaad44343cc945e76c2e30927b3
    */
-  static getSql(opts?: QueryOptions): string {
+  static getSql(opts: QueryOptions): string {
     const sqls: string[] = [];
+    //
+    // WHERE
+    //
     const where: string[] = [];
-    // const url = new SqlUrlBuilder(this.server, this.api, this.token);
-    // .limit(opts?.limit)
-    // .page(opts?.page)
-    // .sort(opts?.sort)
-    // .order(opts?.order)
-    // .start(opts?.start)
-    // .end(opts?.end)
-    // .q(opts?.q);
-    if (opts?.ids?.length) {
+
+    if (opts.ids?.length) {
+      // TODO ids.length===1, use id=n
       const ids = opts.ids.map((id) => `'${id}'`).join(', ');
       where.push(`\`id\` IN (${ids})`);
     }
 
-    if (opts?.param) {
+    if (opts.param) {
       const { param } = opts;
-      if (Array.isArray(param) && param.length)
-        where.push(param.map((o) => `\`${o.name}\`='${esc(`${o.value}`)}'`).join(' OR '));
-      else if (Object.entries(param).length)
-        where.push(
-          Object.entries(param)
-            .map(([name, value]) => `\`${name}\`='${esc(`${value}`)}'`)
-            .join(' AND ')
-        );
+      if (Array.isArray(param)) {
+        if (param.length)
+          where.push(param.map((o) => `\`${o.name}\`='${esc(`${o.value}`)}'`).join(' OR '));
+      } else {
+        const ent = Object.entries(param);
+        if (ent.length) where.push(ent.map(([k, v]) => `\`${k}\`='${esc(`${v}`)}'`).join(' OR '));
+      }
     }
-    if (where.length) sqls.push(`WHERE ${where.join(' OR ')}`); // FIXME AND?
-    // if (opts?.gte) opts.gte.forEach((it) => url.gte(it.name, it.value));
-    // if (opts?.lte) opts.lte.forEach((it) => url.lte(it.name, it.value));
-    // if (opts?.ne) opts.ne.forEach((it) => url.ne(it.name, it.value));
-    // if (opts?.like) opts.like.forEach((it) => url.like(it.name, it.value));
-    // if (opts?.embed) opts.embed.forEach((it) => url.embed(it));
-    // if (opts?.expand) opts.expand.forEach((it) => url.expand(it));
+
+    if (opts.like) {
+      const { like } = opts;
+      if (Array.isArray(like)) {
+        if (like.length)
+          where.push(like.map((o) => `\`${o.name}\` LIKE '%${esc(`${o.value}`)}%'`).join(' OR '));
+      } else {
+        const ent = Object.entries(like);
+        if (ent.length)
+          where.push(ent.map(([k, v]) => `\`${k}\` LIKE '%${esc(`${v}`)}%'`).join(' OR '));
+      }
+    }
+
+    // .q(opts.q);
+    // if (opts.gte) opts.gte.forEach((it) => url.gte(it.name, it.value));
+    // if (opts.lte) opts.lte.forEach((it) => url.lte(it.name, it.value));
+    // if (opts.ne) opts.ne.forEach((it) => url.ne(it.name, it.value));
+
+    if (where.length) sqls.push(`WHERE ${where.join(' OR ')}`);
+
+    //
+    // ORDER BY
+    //
+    if (opts.sort) {
+      sqls.push(`ORDER BY \`${opts.sort}\` ${opts.order ? opts.order.toUpperCase() : 'ASC'}`);
+    }
+
+    //
+    // LIMIT
+    //
+    if (opts.limit) {
+      // FIXME limit < 0
+      // const limit = opts.limit > 0 ? opts.limit :
+      sqls.push(`LIMIT ${opts.limit}`);
+    }
+
+    //
+    // Pager
+    //
+    // .page(opts.page)
+    // .start(opts.start)
+    // .end(opts.end)
+
+    //
+    // Embed & Parent
+    //
+    // if (opts.embed) opts.embed.forEach((it) => url.embed(it));
+    // if (opts.expand) opts.expand.forEach((it) => url.expand(it));
 
     return sqls.join(' ');
   }
 
   // protected getUrl(opts?: QueryOptions): UrlBuilder {
   //   const url = new UrlBuilder(this.server, this.api, this.token)
-  //     .limit(opts?.limit)
-  //     .page(opts?.page)
-  //     .sort(opts?.sort)
-  //     .order(opts?.order)
-  //     .start(opts?.start)
-  //     .end(opts?.end)
-  //     .q(opts?.q);
-  //   if (opts?.ids) opts.ids.forEach((id) => url.id(id));
-  //   if (opts?.gte) opts.gte.forEach((it) => url.gte(it.name, it.value));
-  //   if (opts?.lte) opts.lte.forEach((it) => url.lte(it.name, it.value));
-  //   if (opts?.ne) opts.ne.forEach((it) => url.ne(it.name, it.value));
-  //   if (opts?.like) opts.like.forEach((it) => url.like(it.name, it.value));
-  //   if (opts?.embed) opts.embed.forEach((it) => url.embed(it));
-  //   if (opts?.expand) opts.expand.forEach((it) => url.expand(it));
-  //   if (opts?.param) {
+  //     .limit(opts.limit)
+  //     .page(opts.page)
+  //     .sort(opts.sort)
+  //     .order(opts.order)
+  //     .start(opts.start)
+  //     .end(opts.end)
+  //     .q(opts.q);
+  //   if (opts.ids) opts.ids.forEach((id) => url.id(id));
+  //   if (opts.gte) opts.gte.forEach((it) => url.gte(it.name, it.value));
+  //   if (opts.lte) opts.lte.forEach((it) => url.lte(it.name, it.value));
+  //   if (opts.ne) opts.ne.forEach((it) => url.ne(it.name, it.value));
+  //   if (opts.like) opts.like.forEach((it) => url.like(it.name, it.value));
+  //   if (opts.embed) opts.embed.forEach((it) => url.embed(it));
+  //   if (opts.expand) opts.expand.forEach((it) => url.expand(it));
+  //   if (opts.param) {
   //     const { param } = opts;
   //     if (Array.isArray(param)) param.forEach((it) => url.p(it.name, it.value));
   //     else Object.entries(param).forEach(([name, value]) => url.p(name, value));
