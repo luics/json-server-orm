@@ -249,12 +249,12 @@ describe(`Plural [${my ? 'mysql-server' : 'json-server'}]`, () => {
   //   strictEqual((await db.comments.update({ id: 1, body: '12345', postId: 1 }))?.body, '12345');
   // });
 
-  it('db.users.count()', async () => {
-    strictEqual(await db.users.count(), 2);
-  });
+  // it('db.users.count()', async () => {
+  //   strictEqual(await db.users.count(), 2);
+  // });
 
   it('db.users.add/delete()', async () => {
-    strictEqual((await db.users.add({ name: 'test', token: '123' }))?.id, 3);
+    strictEqual((await db.users.add({ name: 'test', token: '123' } as any))?.id, 3);
     await db.users.delete(3);
     strictEqual((await db.users.all()).length, 2);
   });

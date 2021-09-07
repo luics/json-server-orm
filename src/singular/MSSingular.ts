@@ -18,7 +18,7 @@ export default class MSSingular<T extends SingularSchema> extends Singular<T> {
     const sql = `UPDATE \`${this.api}\` SET \`value\`='${JSON.stringify(data)}'`;
     const url = `${this.server}/query?sql=${enc(sql)}`;
     const res = await axios.get(url);
-    if (res.data.changedRows !== 1) throw new Error('UPDATE failed.');
+    if (res.data.affectedRows !== 1) throw new Error(`Failed: ${sql}`);
     // console.log(res.data);
 
     return data;

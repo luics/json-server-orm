@@ -1,5 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import axios from 'axios';
+import { esc } from '@luics/mysql-server';
 import { Plural, UrlBuilder, QueryOptions, PluralSchema } from '..';
+
+const enc = encodeURIComponent;
+const { keys, values, entries } = Object;
 
 export default class JSPlural<T extends PluralSchema> extends Plural<T> {
   public async count(opts?: QueryOptions): Promise<number> {
@@ -8,9 +13,14 @@ export default class JSPlural<T extends PluralSchema> extends Plural<T> {
     return parseInt(res.headers['x-total-count'] ?? '0', 10);
   }
 
-  public async all(opts?: QueryOptions): Promise<T[]> {
-    const url = this.getUrl(opts);
-    const res = await axios.get(url.toString());
+  public async all(_opts?: QueryOptions): Promise<T[]> {
+    // TODO opts
+    // const url = this.getUrl(opts);
+    // const res = await axios.get(url.toString());
+    const sql = `SELECT * FROM \`${this.api}\``;
+    const url = `${this.server}/query?sql=${enc(sql)}`;
+    const res = await axios.get(url);
+
     return res.data;
   }
 
@@ -19,25 +29,51 @@ export default class JSPlural<T extends PluralSchema> extends Plural<T> {
     return items[0];
   }
 
-  public async add(data: unknown): Promise<T> {
-    this.val({ ...(data as any), id: 0 });
-    const url = new UrlBuilder(this.server, this.api, this.token).toString();
-    const res = await axios.post(url, data);
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  public async add(data: any): Promise<T> {
+    this.val({ ...data, id: 0 });
+    const k = keys(data)
+      .map((o) => `\`${o}\``)
+      .join(', ');
+    const v = values(data)
+      .map((o) => `'${esc(`${o}`)}'`)
+      .join(', ');
+    const sql = `INSERT INTO \`${this.api}\` (${k}) VALUES (${v})`;
+    const url = `${this.server}/query?sql=${enc(sql)}`;
+    const res = await axios.get(url);
+    if (res.data.affectedRows !== 1) throw new Error(`Failed: ${sql}`);
+    console.log(res.data);
 
-    return res.data;
+    return { ...data, id: res.data.insertId };
   }
 
   public async update(data: T): Promise<T> {
     this.val(data);
-    const url = new UrlBuilder(this.server, `${this.api}/${data.id}`, this.token).toString();
-    const res = await axios.patch(url, data);
 
-    return res.data;
+    const en = entries(data);
+    en.splice(
+      en.findIndex(([k]) => k === 'id'),
+      1
+    );
+    const vv = en.map(([k, v]) => (k === 'id' ? '' : `\`${k}\`='${esc(`${v}`)}'`)).join(', ');
+    const sql = `UPDATE \`${this.api}\` SET ${vv} WHERE id='${data.id}'`;
+    const url = `${this.server}/query?sql=${enc(sql)}`;
+    const res = await axios.get(url);
+    console.log(sql);
+    console.log(res.data);
+    if (res.data.affectedRows !== 1) throw new Error(`Failed: ${sql}`);
+
+    return data;
   }
 
   public async delete(id: number): Promise<void> {
-    const url = new UrlBuilder(this.server, `${this.api}/${id}`, this.token).toString();
-    await axios.delete(url);
+    const sql = `DELETE FROM \`${this.api}\` WHERE id='${id}'`;
+    const url = `${this.server}/query?sql=${enc(sql)}`;
+    const res = await axios.get(url);
+    if (res.data.affectedRows !== 1) throw new Error(`Failed: ${sql}`);
+    console.log(res.data);
+
+    return res.data;
   }
 
   protected getUrl(opts?: QueryOptions): UrlBuilder {
