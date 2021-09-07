@@ -1,4 +1,4 @@
-import { UrlBuilder, QueryOptions, PluralSchema } from '..';
+import { QueryOptions, PluralSchema } from '..';
 import Base from '../Base';
 
 export default abstract class Plural<T extends PluralSchema> extends Base<T> {
@@ -14,5 +14,5 @@ export default abstract class Plural<T extends PluralSchema> extends Base<T> {
 
   public abstract delete(id: number): Promise<void>;
 
-  protected abstract getUrl(opts?: QueryOptions): UrlBuilder;
+  // protected abstract getUrl(opts?: QueryOptions): UrlBuilder;
 }

@@ -7,7 +7,7 @@ import { ok, strictEqual, rejects } from 'assert';
 import getJsonServerApp from '@luics/json-server-simple';
 import { getMysqlServerApp } from '@luics/mysql-server';
 import { JSPlural, MSPlural, Validation } from '../src';
-import { User } from './server/schema';
+import { User, Post, Comment } from './server/schema';
 import dbJson from './server/db.json';
 import schema from './server/schema.json';
 import config from '../local.config.json';
@@ -17,17 +17,21 @@ const my = process.argv.includes('--mysql');
 const port = 31989;
 const s = `http://localhost:${port}/api`;
 const app = my
-  ? getMysqlServerApp({ mysqlConfig: config.mysql, level: 'access' })
+  ? getMysqlServerApp({ mysqlConfig: config.mysql }) // , level: 'access'
   : getJsonServerApp({ watch: dbJson });
 const v = new Validation(schema);
 const db = {
-  // posts: new Plural<Post>(s, 'posts', v.validation.post),
-  // comments: new Plural<Comment>(s, 'comments', v.validation.comment),
+  posts: my
+    ? new MSPlural<Post>(s, 'posts', v.validation.post)
+    : new JSPlural<Post>(s, 'posts', v.validation.post),
+  comments: my
+    ? new MSPlural<Comment>(s, 'comments', v.validation.comment)
+    : new JSPlural<Comment>(s, 'comments', v.validation.comment),
   users: my
     ? new MSPlural<User>(s, 'users', v.validation.user)
     : new JSPlural<User>(s, 'users', v.validation.user),
 };
-// const len = dbJson.posts.length;
+const len = dbJson.posts.length;
 let server: http.Server;
 
 describe(`Plural [${my ? 'mysql-server' : 'json-server'}]`, () => {
@@ -58,17 +62,17 @@ describe(`Plural [${my ? 'mysql-server' : 'json-server'}]`, () => {
     ok(db.users);
   });
 
-  // it('db.posts.all()', async () => {
-  //   ok((await db.posts.all()).length > 0);
-  //   strictEqual((await db.posts.all()).length, len);
-  // });
+  it('db.posts.all()', async () => {
+    ok((await db.posts.all()).length > 0);
+    strictEqual((await db.posts.all()).length, len);
+  });
 
-  // it('db.posts.all({ ids })', async () => {
-  //   strictEqual((await db.posts.all({ ids: [] })).length, len);
-  //   strictEqual((await db.posts.all({ ids: [1] })).length, 1);
-  //   strictEqual((await db.posts.all({ ids: [1, 2] })).length, 2);
-  //   strictEqual((await db.posts.all({ ids: [1, 10000] })).length, 1);
-  // });
+  it('db.posts.all({ ids })', async () => {
+    strictEqual((await db.posts.all({ ids: [] })).length, len);
+    strictEqual((await db.posts.all({ ids: [1] })).length, 1);
+    strictEqual((await db.posts.all({ ids: [1, 2] })).length, 2);
+    strictEqual((await db.posts.all({ ids: [1, 10000] })).length, 1);
+  });
 
   // it('db.posts.all({ limit })', async () => {
   //   strictEqual((await db.posts.all({ limit: 1 })).length, 1);
@@ -187,71 +191,67 @@ describe(`Plural [${my ? 'mysql-server' : 'json-server'}]`, () => {
   //   strictEqual((await db.posts.one(0))?.id, undefined);
   // });
 
-  // it('db.posts.add/delete()', async () => {
-  //   strictEqual((await db.posts.add({ title: 'post from test', userId: 1 }))?.id, len + 1);
-  //   strictEqual((await db.posts.add({ title: 'post from test', userId: 1 }))?.id, len + 2);
-  //   await db.posts.delete(len + 2);
-  //   await db.posts.delete(len + 1);
-  //   strictEqual((await db.posts.all()).length, len);
-  // });
+  it('db.posts.add/delete()', async () => {
+    strictEqual((await db.posts.add({ title: 'post from test', userId: 1 }))?.id, len + 1);
+    strictEqual((await db.posts.add({ title: 'post from test', userId: 1 }))?.id, len + 2);
+    await db.posts.delete(len + 2);
+    await db.posts.delete(len + 1);
+    strictEqual((await db.posts.all()).length, len);
+  });
 
-  // it('db.posts.add() +validation', async () => {
-  //   rejects(async () => db.posts.add({ title: 'post from test' })); // ValidationError
-  //   rejects(async () => db.posts.add({ title: 'post', userId: 1 }));
-  // });
+  it('db.posts.add() +validation', async () => {
+    rejects(async () => db.posts.add({ title: 'post from test' })); // ValidationError
+    rejects(async () => db.posts.add({ title: 'post', userId: 1 }));
+  });
 
-  // it('db.posts.update()', async () => {
-  //   strictEqual((await db.posts.update({ id: 1, title: '12345', userId: 1 }))?.title, '12345');
-  //   strictEqual((await db.posts.update({ id: 1, title: '12345', userId: 2 }))?.userId, 2);
-  // });
+  it('db.posts.update()', async () => {
+    strictEqual((await db.posts.update({ id: 1, title: '12345', userId: 1 }))?.title, '12345');
+    strictEqual((await db.posts.update({ id: 1, title: '12345', userId: 2 }))?.userId, 2);
+  });
 
-  // it('db.posts.count()', async () => {
-  //   strictEqual(await db.posts.count(), len);
-  // });
+  it('db.posts.count()', async () => {
+    strictEqual(await db.posts.count(), len);
+  });
 
-  // it('db.comments.count()', async () => {
-  //   strictEqual(await db.comments.count(), 5);
-  // });
+  it('db.comments.count()', async () => {
+    strictEqual(await db.comments.count(), 5);
+  });
 
-  // it('db.comments.all() +param array', async () => {
-  //   strictEqual((await db.comments.all()).length, 5);
-  //   strictEqual((await db.comments.all({ param: [{ name: 'postId', value: 1 }] })).length, 3);
-  //   strictEqual(
-  //     (
-  //       await db.comments.all({
-  //         param: [
-  //           { name: 'postId', value: 1 },
-  //           { name: 'postId', value: 2 },
-  //         ],
-  //       })
-  //     ).length,
-  //     4
-  //   );
-  // });
+  it('db.comments.all() +param array', async () => {
+    strictEqual((await db.comments.all()).length, 5);
+    strictEqual((await db.comments.all({ param: [] })).length, 5);
+    strictEqual((await db.comments.all({ param: [{ name: 'postId', value: 1 }] })).length, 3);
+    const param = [
+      { name: 'postId', value: 1 },
+      { name: 'postId', value: 2 },
+    ];
+    strictEqual((await db.comments.all({ param })).length, 4);
+  });
 
-  // it('db.comments.all() +param object', async () => {
-  //   strictEqual((await db.comments.all({ param: { postId: 1 } })).length, 3);
-  //   strictEqual((await db.comments.all({ param: { body: 'some comment 1' } })).length, 1);
-  // });
+  it('db.comments.all() +param object', async () => {
+    strictEqual((await db.comments.all({ param: {} })).length, 5);
+    strictEqual((await db.comments.all({ param: { postId: 1 } })).length, 3);
+    strictEqual((await db.comments.all({ param: { body: 'some comment 1' } })).length, 1);
+  });
 
-  // it('db.comments.add/delete()', async () => {
-  //   strictEqual((await db.comments.add({ body: '12345', postId: 1 }))?.id, 6);
-  //   await db.comments.delete(6);
-  //   strictEqual((await db.comments.all()).length, 5);
-  // });
+  it('db.comments.add/delete()', async () => {
+    strictEqual((await db.comments.add({ body: '12345', postId: 1 }))?.id, 6);
+    await db.comments.delete(6);
+    strictEqual((await db.comments.all()).length, 5);
+  });
 
-  // it('db.comments.add() +validation', async () => {
-  //   rejects(async () => db.comments.add({ body: '12345' }));
-  //   rejects(async () => db.comments.add({ body: '1234', postId: 1 }));
-  // });
+  it('db.comments.add() +validation', async () => {
+    rejects(async () => db.comments.add({ body: '12345' }));
+    rejects(async () => db.comments.add({ body: '1234', postId: 1 }));
+  });
 
-  // it('db.comments.update()', async () => {
-  //   strictEqual((await db.comments.update({ id: 1, body: '12345', postId: 1 }))?.body, '12345');
-  // });
+  it('db.comments.update()', async () => {
+    strictEqual((await db.comments.update({ id: 1, body: '12345', postId: 1 }))?.body, '12345');
+  });
 
-  // it('db.users.count()', async () => {
-  //   strictEqual(await db.users.count(), 2);
-  // });
+  it('db.users.count()', async () => {
+    strictEqual(await db.users.count(), 2);
+  });
 
   it('db.users.add/delete()', async () => {
     strictEqual((await db.users.add({ name: 'test', token: '123' } as any))?.id, 3);
