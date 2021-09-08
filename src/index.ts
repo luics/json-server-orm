@@ -1,6 +1,6 @@
 export * from './util';
-export { default as UrlBuilder } from './url/UrlBuilder';
-export { default as SqlUrlBuilder } from './url/SqlUrlBuilder';
+export { default as UrlBuilder } from './UrlBuilder';
+// export { default as SqlUrlBuilder } from './url/SqlUrlBuilder';
 export { default as Validation } from './Validation';
 export { Schema, PluralSchema, SingularSchema } from './schema';
 
