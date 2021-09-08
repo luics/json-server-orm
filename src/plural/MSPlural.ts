@@ -92,7 +92,7 @@ export default class JSPlural<T extends PluralSchema> extends Plural<T> {
         const ps = v.map((v1) => op(n, v1));
         if (ps.length) s.push(`(${ps.join(' OR ')})`);
       } else {
-        s.push(op(n, v));
+        s.push(`(${op(n, v)})`);
       }
     });
 

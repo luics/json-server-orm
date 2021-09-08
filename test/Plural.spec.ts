@@ -218,12 +218,19 @@ describe(`Plural [${my ? 'mysql-server' : 'json-server'}]`, () => {
     deepStrictEqual(await db.comments.count(), 5);
   });
 
-  it('db.comments.all() +param', async () => {
+  it('db.comments.all({ param })', async () => {
     deepStrictEqual(await db.comments.all({ param: {} }), c);
     deepStrictEqual(await db.comments.all({ param: { postId: 1 } }), [c[0], c[3], c[4]]);
     deepStrictEqual(await db.comments.all({ param: { postId: [1, 2] } }), [c[0], c[1], c[3], c[4]]);
     deepStrictEqual(await db.comments.all({ param: { body: 'some comment 2' } }), [c[1]]);
     deepStrictEqual(await db.comments.all({ param: { body: 'some comment 2', postId: 1 } }), []);
+  });
+
+  it('db.comments.all({ like, param })', async () => {
+    deepStrictEqual(await db.comments.all({ param: { postId: 1 }, like: { body: '5' } }), [c[4]]);
+    deepStrictEqual(await db.comments.all({ param: { postId: [1, 2] }, like: { body: '5' } }), [
+      c[4],
+    ]);
   });
 
   it('db.comments.add/delete()', async () => {
