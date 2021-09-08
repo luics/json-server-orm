@@ -1,4 +1,4 @@
-import { Order } from '..';
+import { Order, V } from '..';
 
 export default class UrlBuilder {
   private params: string[] = [];
@@ -13,16 +13,16 @@ export default class UrlBuilder {
     return this.base + this.apiName + (this.params.length ? `?${this.params.join('&')}` : '');
   }
 
-  p(name: string, v?: unknown): UrlBuilder {
-    if (name === '') throw new Error('name is empty');
+  p(n: string, v?: V): UrlBuilder {
+    if (n === '') throw new Error('name is empty');
     if (v === undefined) return this;
 
-    let val;
-    if (typeof v === 'object' && v !== null && 'toString' in v) val = v.toString();
-    else if (typeof v === 'symbol') val = v.description;
-    else val = `${v}`;
+    // let val;
+    // if (typeof v === 'object' && v !== null && 'toString' in v) val = v.toString();
+    // else if (typeof v === 'symbol') val = v.description;
+    // else val = `${v}`;
 
-    this.params.push(`${encodeURIComponent(name)}=${encodeURIComponent(val ?? '')}`);
+    this.params.push(`${encodeURIComponent(n)}=${encodeURIComponent(`${v}`)}`);
     return this;
   }
 
@@ -54,23 +54,23 @@ export default class UrlBuilder {
     return this.p('_end', v);
   }
 
-  gte(name: string, v?: number): UrlBuilder {
+  gte(name: string, v?: V): UrlBuilder {
     return this.p(`${name}_gte`, v);
   }
 
-  lte(name: string, v?: number): UrlBuilder {
+  lte(name: string, v?: V): UrlBuilder {
     return this.p(`${name}_lte`, v);
   }
 
-  ne(name: string, v?: number): UrlBuilder {
+  ne(name: string, v?: V): UrlBuilder {
     return this.p(`${name}_ne`, v);
   }
 
-  like(name: string, v?: unknown): UrlBuilder {
+  like(name: string, v?: V): UrlBuilder {
     return this.p(`${name}_like`, v);
   }
 
-  q(v?: unknown): UrlBuilder {
+  q(v?: V): UrlBuilder {
     return this.p('q', v);
   }
 

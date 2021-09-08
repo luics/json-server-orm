@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Plural, UrlBuilder, QueryOptions, PluralSchema } from '..';
+import { arr, Plural, UrlBuilder, QueryOptions, PluralSchema, entries } from '..';
 
 export default class JSPlural<T extends PluralSchema> extends Plural<T> {
   public async count(opts?: QueryOptions): Promise<number> {
@@ -50,17 +50,13 @@ export default class JSPlural<T extends PluralSchema> extends Plural<T> {
       .end(opts?.end)
       .q(opts?.q);
     if (opts?.ids) opts.ids.forEach((id) => url.id(id));
-    if (opts?.gte) opts.gte.forEach((it) => url.gte(it.name, it.value));
-    if (opts?.lte) opts.lte.forEach((it) => url.lte(it.name, it.value));
-    if (opts?.ne) opts.ne.forEach((it) => url.ne(it.name, it.value));
-    if (opts?.like) opts.like.forEach((it) => url.like(it.name, it.value));
+    if (opts?.gte) entries(opts.gte).forEach(([n, v]) => arr(v).forEach((v1) => url.gte(n, v1)));
+    if (opts?.lte) entries(opts.lte).forEach(([n, v]) => arr(v).forEach((v1) => url.lte(n, v1)));
+    if (opts?.ne) entries(opts.ne).forEach(([n, v]) => arr(v).forEach((v1) => url.ne(n, v1)));
+    if (opts?.like) entries(opts.like).forEach(([n, v]) => arr(v).forEach((v1) => url.like(n, v1)));
     if (opts?.embed) opts.embed.forEach((it) => url.embed(it));
     if (opts?.expand) opts.expand.forEach((it) => url.expand(it));
-    if (opts?.param) {
-      const { param } = opts;
-      if (Array.isArray(param)) param.forEach((it) => url.p(it.name, it.value));
-      else Object.entries(param).forEach(([name, value]) => url.p(name, value));
-    }
+    if (opts?.param) entries(opts.param).forEach(([n, v]) => arr(v).forEach((v1) => url.p(n, v1)));
 
     return url;
   }

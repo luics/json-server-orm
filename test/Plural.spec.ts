@@ -1,9 +1,9 @@
 import fs from 'fs';
 import path from 'path';
 import http from 'http';
+import { ok, deepStrictEqual, rejects } from 'assert';
 import 'mocha';
 import axios from 'axios';
-import { ok, deepStrictEqual, rejects } from 'assert';
 import getJsonServerApp from '@luics/json-server-simple';
 import { getMysqlServerApp } from '@luics/mysql-server';
 import { JSPlural, MSPlural, Validation } from '../src';
@@ -18,7 +18,7 @@ const port = 31989;
 const s = `http://localhost:${port}/api`;
 const app = my
   ? getMysqlServerApp({ mysqlConfig: config.mysql, level: 'access' }) //
-  : getJsonServerApp({ watch: dbJson });
+  : getJsonServerApp({ watch: dbJson, level: 'access' });
 const v = new Validation(schema);
 const db = {
   posts: my
@@ -78,7 +78,7 @@ describe(`Plural [${my ? 'mysql-server' : 'json-server'}]`, () => {
   it('db.posts.all({ limit })', async () => {
     deepStrictEqual((await db.posts.all({ limit: 1 })).length, 1);
     deepStrictEqual((await db.posts.all({ limit: len })).length, len);
-    // deepStrictEqual((await db.posts.all({ limit: -1 })).length, len - 1);
+    // TODO deepStrictEqual((await db.posts.all({ limit: -1 })).length, len - 1);
     deepStrictEqual((await db.posts.all({ limit: len + 1 })).length, len);
   });
 
@@ -126,30 +126,30 @@ describe(`Plural [${my ? 'mysql-server' : 'json-server'}]`, () => {
 
   // it('db.posts.all({ gte, lte })', async () => {
   //   deepStrictEqual(
-  //     (await db.posts.all({ gte: [{ name: 'id', value: 1 }], lte: [{ name: 'id', value: 5 }] }))
+  //     (await db.posts.all({ gte: [{ n: 'id', v: 1 }], lte: [{ n: 'id', v: 5 }] }))
   //       .length,
   //     5
   //   );
   //   deepStrictEqual(
-  //     (await db.posts.all({ gte: [{ name: 'id', value: 1 }], lte: [{ name: 'id', value: 5 }] }))[0]
+  //     (await db.posts.all({ gte: [{ n: 'id', v: 1 }], lte: [{ n: 'id', v: 5 }] }))[0]
   //       .id,
   //     1
   //   );
   //   deepStrictEqual(
-  //     (await db.posts.all({ gte: [{ name: 'id', value: 1 }], lte: [{ name: 'id', value: 5 }] }))[4]
+  //     (await db.posts.all({ gte: [{ n: 'id', v: 1 }], lte: [{ n: 'id', v: 5 }] }))[4]
   //       .id,
   //     5
   //   );
   // });
 
   // it('db.posts.all({ ne })', async () => {
-  //   deepStrictEqual((await db.posts.all({ ne: [{ name: 'id', value: 1 }] })).length, len - 1);
+  //   deepStrictEqual((await db.posts.all({ ne: [{ n: 'id', v: 1 }] })).length, len - 1);
   //   deepStrictEqual(
   //     (
   //       await db.posts.all({
   //         ne: [
-  //           { name: 'id', value: 1 },
-  //           { name: 'id', value: 2 },
+  //           { n: 'id', v: 1 },
+  //           { n: 'id', v: 2 },
   //         ],
   //       })
   //     ).length,
@@ -159,8 +159,8 @@ describe(`Plural [${my ? 'mysql-server' : 'json-server'}]`, () => {
   //     (
   //       await db.posts.all({
   //         ne: [
-  //           { name: 'id', value: 1 },
-  //           { name: 'id', value: 10000 },
+  //           { n: 'id', v: 1 },
+  //           { n: 'id', v: 10000 },
   //         ],
   //       })
   //     ).length,
@@ -169,8 +169,8 @@ describe(`Plural [${my ? 'mysql-server' : 'json-server'}]`, () => {
   // });
 
   it('db.posts.all({ like })', async () => {
-    deepStrictEqual((await db.posts.all({ like: [{ name: 'title', value: 'we' }] })).length, 1);
-    deepStrictEqual((await db.posts.all({ like: [{ name: 'title', value: 'post' }] })).length, 18);
+    deepStrictEqual((await db.posts.all({ like: { title: 'wer' } })).length, 1);
+    deepStrictEqual((await db.posts.all({ like: { title: 'post' } })).length, 18);
   });
 
   // it('db.posts.all({ q })', async () => {
@@ -218,29 +218,12 @@ describe(`Plural [${my ? 'mysql-server' : 'json-server'}]`, () => {
     deepStrictEqual(await db.comments.count(), 5);
   });
 
-  it('db.comments.all() +param array', async () => {
-    deepStrictEqual(await db.comments.all(), c);
-    deepStrictEqual(await db.comments.all({ param: [] }), c);
-    deepStrictEqual(await db.comments.all({ param: [{ name: 'postId', value: 1 }] }), [
-      c[0],
-      c[3],
-      c[4],
-    ]);
-    const param = [
-      { name: 'postId', value: 1 },
-      { name: 'postId', value: 2 },
-    ];
-    deepStrictEqual(await db.comments.all({ param }), [c[0], c[1], c[3], c[4]]);
-  });
-
-  it('db.comments.all() +param object', async () => {
+  it('db.comments.all() +param', async () => {
     deepStrictEqual(await db.comments.all({ param: {} }), c);
     deepStrictEqual(await db.comments.all({ param: { postId: 1 } }), [c[0], c[3], c[4]]);
-    deepStrictEqual(await db.comments.all({ param: { body: 'some comment 1' } }), [c[0]]);
-    deepStrictEqual(await db.comments.all({ param: { id: 2, body: 'some comment 1' } }), [
-      c[0],
-      c[1],
-    ]);
+    deepStrictEqual(await db.comments.all({ param: { postId: [1, 2] } }), [c[0], c[1], c[3], c[4]]);
+    deepStrictEqual(await db.comments.all({ param: { body: 'some comment 2' } }), [c[1]]);
+    deepStrictEqual(await db.comments.all({ param: { body: 'some comment 2', postId: 1 } }), []);
   });
 
   it('db.comments.add/delete()', async () => {

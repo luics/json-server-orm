@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import axios from 'axios';
 import { esc } from '@luics/mysql-server';
-import { Plural, QueryOptions, PluralSchema } from '..';
+import { KVO, V, Plural, QueryOptions, PluralSchema, isA, MSPlural, isEmpty } from '..';
 
 const enc = encodeURIComponent;
 const { keys, values, entries } = Object;
@@ -85,51 +85,41 @@ export default class JSPlural<T extends PluralSchema> extends Plural<T> {
     return res.data;
   }
 
+  static build(p: KVO, op = (n: string, v: V) => `\`${n}\`='${esc(`${v}`)}'`): string {
+    const s: string[] = [];
+    entries(p).forEach(([n, v]) => {
+      if (isA(v)) {
+        const ps = v.map((v1) => op(n, v1));
+        if (ps.length) s.push(`(${ps.join(' OR ')})`);
+      } else {
+        s.push(op(n, v));
+      }
+    });
+
+    return s.join(' AND ');
+  }
+
   /**
    * @see https://gist.github.com/bradtraversy/c831baaad44343cc945e76c2e30927b3
    */
   static getSql(opts: QueryOptions): string {
+    const { build } = MSPlural;
     const sqls: string[] = [];
     //
     // WHERE
     //
     const where: string[] = [];
+    if (opts.ids?.length) where.push(build({ id: opts.ids }));
+    if (opts.param && !isEmpty(opts.param)) where.push(build(opts.param));
+    if (opts.like && !isEmpty(opts.like))
+      where.push(build(opts.like, (n, v) => `\`${n}\` LIKE '%${esc(`${v}`)}%'`));
 
-    if (opts.ids?.length) {
-      // TODO ids.length===1, use id=n
-      const ids = opts.ids.map((id) => `'${id}'`).join(', ');
-      where.push(`\`id\` IN (${ids})`);
-    }
-
-    if (opts.param) {
-      const { param } = opts;
-      if (Array.isArray(param)) {
-        if (param.length)
-          where.push(param.map((o) => `\`${o.name}\`='${esc(`${o.value}`)}'`).join(' OR '));
-      } else {
-        const ent = Object.entries(param);
-        if (ent.length) where.push(ent.map(([k, v]) => `\`${k}\`='${esc(`${v}`)}'`).join(' OR '));
-      }
-    }
-
-    if (opts.like) {
-      const { like } = opts;
-      if (Array.isArray(like)) {
-        if (like.length)
-          where.push(like.map((o) => `\`${o.name}\` LIKE '%${esc(`${o.value}`)}%'`).join(' OR '));
-      } else {
-        const ent = Object.entries(like);
-        if (ent.length)
-          where.push(ent.map(([k, v]) => `\`${k}\` LIKE '%${esc(`${v}`)}%'`).join(' OR '));
-      }
-    }
-
-    // .q(opts.q);
     // if (opts.gte) opts.gte.forEach((it) => url.gte(it.name, it.value));
     // if (opts.lte) opts.lte.forEach((it) => url.lte(it.name, it.value));
     // if (opts.ne) opts.ne.forEach((it) => url.ne(it.name, it.value));
+    // .q(opts.q);
 
-    if (where.length) sqls.push(`WHERE ${where.join(' OR ')}`);
+    if (where.length) sqls.push(`WHERE ${where.join(' AND ')}`);
 
     //
     // ORDER BY
@@ -162,29 +152,4 @@ export default class JSPlural<T extends PluralSchema> extends Plural<T> {
 
     return sqls.join(' ');
   }
-
-  // protected getUrl(opts?: QueryOptions): UrlBuilder {
-  //   const url = new UrlBuilder(this.server, this.api, this.token)
-  //     .limit(opts.limit)
-  //     .page(opts.page)
-  //     .sort(opts.sort)
-  //     .order(opts.order)
-  //     .start(opts.start)
-  //     .end(opts.end)
-  //     .q(opts.q);
-  //   if (opts.ids) opts.ids.forEach((id) => url.id(id));
-  //   if (opts.gte) opts.gte.forEach((it) => url.gte(it.name, it.value));
-  //   if (opts.lte) opts.lte.forEach((it) => url.lte(it.name, it.value));
-  //   if (opts.ne) opts.ne.forEach((it) => url.ne(it.name, it.value));
-  //   if (opts.like) opts.like.forEach((it) => url.like(it.name, it.value));
-  //   if (opts.embed) opts.embed.forEach((it) => url.embed(it));
-  //   if (opts.expand) opts.expand.forEach((it) => url.expand(it));
-  //   if (opts.param) {
-  //     const { param } = opts;
-  //     if (Array.isArray(param)) param.forEach((it) => url.p(it.name, it.value));
-  //     else Object.entries(param).forEach(([name, value]) => url.p(name, value));
-  //   }
-
-  //   return url;
-  // }
 }
