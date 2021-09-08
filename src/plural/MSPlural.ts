@@ -118,7 +118,7 @@ export default class JSPlural<T extends PluralSchema> extends Plural<T> {
     if (opts.ne && !isEmpty(opts.ne))
       where.push(build(opts.ne, (n, v) => `\`${n}\` != ${v}`, 'AND'));
 
-    // TODO full-text search
+    // TODO full-text search https://dev.mysql.com/doc/refman/8.0/en/fulltext-natural-language.html
     // .q(opts.q);
 
     if (where.length) sqls.push(`WHERE ${where.join(' AND ')}`);
