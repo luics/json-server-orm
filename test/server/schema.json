@@ -16,7 +16,7 @@
                     "$ref": "#/definitions/Post"
                 },
                 "postId": {
-                    "type": "number"
+                    "type": "integer"
                 }
             },
             "propertyOrder": [
@@ -44,24 +44,6 @@
                 "id": {
                     "type": "integer"
                 },
-                "meta": {
-                    "additionalProperties": true,
-                    "properties": {
-                    },
-                    "type": "object"
-                },
-                "private": {
-                    "type": "boolean"
-                },
-                "tags": {
-                    "items": {
-                        "type": "string"
-                    },
-                    "type": "array"
-                },
-                "test": {
-                    "type": "null"
-                },
                 "title": {
                     "maxLength": 50,
                     "minLength": 5,
@@ -72,19 +54,11 @@
                 },
                 "userId": {
                     "type": "integer"
-                },
-                "weight": {
-                    "type": "number"
                 }
             },
             "propertyOrder": [
                 "title",
                 "userId",
-                "tags",
-                "meta",
-                "private",
-                "weight",
-                "test",
                 "user",
                 "comments",
                 "id"

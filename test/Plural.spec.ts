@@ -124,49 +124,17 @@ describe(`Plural [${my ? 'mysql-server' : 'json-server'}]`, () => {
   //   deepStrictEqual((await db.posts.all({ start: 1, end: 1 })).length, 0);
   // });
 
-  // it('db.posts.all({ gte, lte })', async () => {
-  //   deepStrictEqual(
-  //     (await db.posts.all({ gte: [{ n: 'id', v: 1 }], lte: [{ n: 'id', v: 5 }] }))
-  //       .length,
-  //     5
-  //   );
-  //   deepStrictEqual(
-  //     (await db.posts.all({ gte: [{ n: 'id', v: 1 }], lte: [{ n: 'id', v: 5 }] }))[0]
-  //       .id,
-  //     1
-  //   );
-  //   deepStrictEqual(
-  //     (await db.posts.all({ gte: [{ n: 'id', v: 1 }], lte: [{ n: 'id', v: 5 }] }))[4]
-  //       .id,
-  //     5
-  //   );
-  // });
+  it('db.posts.all({ gte, lte })', async () => {
+    deepStrictEqual(await db.posts.all({ lte: { id: 3 } }), [p[0], p[1], p[2]]);
+    deepStrictEqual(await db.posts.all({ gte: { id: 18 } }), [p[17], p[18], p[19]]);
+    deepStrictEqual(await db.posts.all({ gte: { id: 2 }, lte: { id: 3 } }), [p[1], p[2]]);
+  });
 
-  // it('db.posts.all({ ne })', async () => {
-  //   deepStrictEqual((await db.posts.all({ ne: [{ n: 'id', v: 1 }] })).length, len - 1);
-  //   deepStrictEqual(
-  //     (
-  //       await db.posts.all({
-  //         ne: [
-  //           { n: 'id', v: 1 },
-  //           { n: 'id', v: 2 },
-  //         ],
-  //       })
-  //     ).length,
-  //     len - 2
-  //   );
-  //   deepStrictEqual(
-  //     (
-  //       await db.posts.all({
-  //         ne: [
-  //           { n: 'id', v: 1 },
-  //           { n: 'id', v: 10000 },
-  //         ],
-  //       })
-  //     ).length,
-  //     len - 1
-  //   );
-  // });
+  it('db.posts.all({ ne })', async () => {
+    deepStrictEqual((await db.posts.all({ ne: { id: 1 } })).length, len - 1);
+    deepStrictEqual((await db.posts.all({ ne: { id: [1, 2] } })).length, len - 2);
+    deepStrictEqual((await db.posts.all({ ne: { id: [1, 10000] } })).length, len - 1);
+  });
 
   it('db.posts.all({ like })', async () => {
     deepStrictEqual((await db.posts.all({ like: { title: 'wer' } })).length, 1);

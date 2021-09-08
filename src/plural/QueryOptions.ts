@@ -1,4 +1,4 @@
-import { KVO, Order } from '..';
+import { KVO, NKVO, Order } from '..';
 
 /**
  * @see https://github.com/typicode/json-server#routes
@@ -11,9 +11,9 @@ export interface QueryOptions {
   order?: Order;
   start?: number;
   end?: number;
-  gte?: KVO;
-  lte?: KVO;
-  ne?: KVO;
+  gte?: NKVO;
+  lte?: NKVO;
+  ne?: NKVO;
   like?: KVO;
   q?: string;
   embed?: string[];

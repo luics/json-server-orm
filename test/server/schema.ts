@@ -12,11 +12,11 @@ export interface Post extends PluralSchema {
    */
   userId: number;
 
-  tags?: string[];
-  meta?: object;
-  private?: boolean;
-  weight?: number;
-  test?: null;
+  // tags?: string[];
+  // meta?: object;
+  // private?: boolean;
+  // weight?: number;
+  // test?: null;
 
   user?: User;
   comments?: Comment[];

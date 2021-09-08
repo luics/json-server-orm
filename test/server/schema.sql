@@ -5,7 +5,7 @@ DROP TABLE IF EXISTS `comments`;
 CREATE TABLE `comments` (
   `id` BIGINT NOT NULL AUTO_INCREMENT,
   `body` VARCHAR(140) NOT NULL,
-  `postId` DOUBLE NOT NULL,
+  `postId` BIGINT NOT NULL,
   PRIMARY KEY (`id`)
 );
 
@@ -18,11 +18,6 @@ CREATE TABLE `posts` (
   `id` BIGINT NOT NULL AUTO_INCREMENT,
   `title` VARCHAR(50) NOT NULL,
   `userId` BIGINT NOT NULL,
-  `tags` JSON ,
-  `meta` JSON ,
-  `private` BOOLEAN ,
-  `weight` DOUBLE ,
-  `test` TINYINT ,
   PRIMARY KEY (`id`)
 );
 

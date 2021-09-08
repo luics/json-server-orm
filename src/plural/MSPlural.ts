@@ -85,12 +85,12 @@ export default class JSPlural<T extends PluralSchema> extends Plural<T> {
     return res.data;
   }
 
-  static build(p: KVO, op = (n: string, v: V) => `\`${n}\`='${esc(`${v}`)}'`): string {
+  static build(p: KVO, op = (n: string, v: V) => `\`${n}\`='${esc(`${v}`)}'`, rel = 'OR'): string {
     const s: string[] = [];
     entries(p).forEach(([n, v]) => {
       if (isA(v)) {
         const ps = v.map((v1) => op(n, v1));
-        if (ps.length) s.push(`(${ps.join(' OR ')})`);
+        if (ps.length) s.push(`(${ps.join(` ${rel} `)})`);
       } else {
         s.push(`(${op(n, v)})`);
       }
@@ -113,10 +113,11 @@ export default class JSPlural<T extends PluralSchema> extends Plural<T> {
     if (opts.param && !isEmpty(opts.param)) where.push(build(opts.param));
     if (opts.like && !isEmpty(opts.like))
       where.push(build(opts.like, (n, v) => `\`${n}\` LIKE '%${esc(`${v}`)}%'`));
+    if (opts.gte && !isEmpty(opts.gte)) where.push(build(opts.gte, (n, v) => `\`${n}\` >= ${v}`));
+    if (opts.lte && !isEmpty(opts.lte)) where.push(build(opts.lte, (n, v) => `\`${n}\` <= ${v}`));
+    if (opts.ne && !isEmpty(opts.ne))
+      where.push(build(opts.ne, (n, v) => `\`${n}\` != ${v}`, 'AND'));
 
-    // if (opts.gte) opts.gte.forEach((it) => url.gte(it.name, it.value));
-    // if (opts.lte) opts.lte.forEach((it) => url.lte(it.name, it.value));
-    // if (opts.ne) opts.ne.forEach((it) => url.ne(it.name, it.value));
     // .q(opts.q);
 
     if (where.length) sqls.push(`WHERE ${where.join(' AND ')}`);
@@ -125,7 +126,7 @@ export default class JSPlural<T extends PluralSchema> extends Plural<T> {
     // ORDER BY
     //
     if (opts.sort) {
-      sqls.push(`ORDER BY \`${opts.sort}\` ${opts.order ? opts.order.toUpperCase() : 'ASC'}`);
+      sqls.push(`ORDER BY \`${opts.sort}\` ${opts.order?.toUpperCase() ?? 'ASC'}`);
     }
 
     //
