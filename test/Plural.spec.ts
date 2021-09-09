@@ -14,7 +14,7 @@ import config from '../local.config.json';
 
 const my = process.argv.includes('--mysql');
 
-const port = 31989;
+const port = 31989 + Math.floor(Math.random() * 10000);
 const s = `http://localhost:${port}/api`;
 const app = my
   ? getMysqlServerApp({ mysqlConfig: config.mysql, level: 'access' }) //

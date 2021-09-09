@@ -107,11 +107,11 @@ export default class JSPlural<T extends PluralSchema> extends Plural<T> {
     const { build } = MSPlural;
     const sqls: string[] = [];
     //
-    // WHERE
+    // WHERE(param, like, q, ids, gte, lte, ne)
     //
     const where: string[] = [];
-    if (opts.ids?.length) where.push(build({ id: opts.ids }));
     if (opts.param && !isEmpty(opts.param)) where.push(build(opts.param));
+    if (opts.ids?.length) where.push(build({ id: opts.ids }));
     if (opts.like && !isEmpty(opts.like))
       where.push(build(opts.like, (n, v) => `\`${n}\` LIKE '%${esc(`${v}`)}%'`));
     if (opts.gte && !isEmpty(opts.gte)) where.push(build(opts.gte, (n, v) => `\`${n}\` >= ${v}`));
@@ -125,7 +125,7 @@ export default class JSPlural<T extends PluralSchema> extends Plural<T> {
     if (where.length) sqls.push(`WHERE ${where.join(' AND ')}`);
 
     //
-    // ORDER BY
+    // ORDER BY(sort, order)
     //
     const order = opts.order?.toUpperCase() ?? 'ASC';
     if (opts.sort) {
@@ -135,7 +135,7 @@ export default class JSPlural<T extends PluralSchema> extends Plural<T> {
     }
 
     //
-    // LIMIT
+    // LIMIT(start, end, limit)
     //
     const offset = opts.start ?? 0;
     let rowCount = -1;
@@ -144,7 +144,7 @@ export default class JSPlural<T extends PluralSchema> extends Plural<T> {
     if (rowCount >= 0) sqls.push(`LIMIT ${offset}, ${rowCount}`);
 
     //
-    // Pager
+    // Paginate(page, limit)
     //
     // .page(opts.page)
 
