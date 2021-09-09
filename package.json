@@ -17,8 +17,8 @@
   "scripts": {
     "start:server": "npx ts-node test/server/server.ts",
     "lint": "eslint \"@(src|test)/**/*.@(js|ts|tsx)\"",
-    "_test": "mocha -r ts-node/register test/**/*.spec.ts",
-    "test": "mocha -r ts-node/register test/Plural.spec.ts",
+    "test": "mocha -r ts-node/register test/**/*.spec.ts",
+    "_test": "mocha -r ts-node/register test/Plural.spec.ts",
     "test:dev": "nodemon --watch ./ --ext ts --delay 0 --exec 'printf \"\\33c\\e[3J\" && npm t'",
     "test:mysql:dev": "nodemon --watch ./ --ext ts --delay 0 --exec 'printf \"\\33c\\e[3J\" && npm t -- --mysql'",
     "jsonschema": "typescript-json-schema 'test/server/schema.ts' '*' -o 'test/server/schema.json' --required --propOrder --noExtraProps",

@@ -2,6 +2,7 @@
 import axios from 'axios';
 import { esc } from '@luics/mysql-server';
 import { KVO, V, Plural, QueryOptions, PluralSchema, isA, MSPlural, isEmpty } from '..';
+import { isN } from '../util';
 
 const enc = encodeURIComponent;
 const { keys, values, entries } = Object;
@@ -126,25 +127,26 @@ export default class JSPlural<T extends PluralSchema> extends Plural<T> {
     //
     // ORDER BY
     //
+    const order = opts.order?.toUpperCase() ?? 'ASC';
     if (opts.sort) {
-      sqls.push(`ORDER BY \`${opts.sort}\` ${opts.order?.toUpperCase() ?? 'ASC'}`);
+      sqls.push(`ORDER BY \`${opts.sort}\` ${order}`);
+    } else {
+      sqls.push(`ORDER BY \`id\` ${order}`);
     }
 
     //
     // LIMIT
     //
-    if (opts.limit) {
-      // FIXME limit < 0
-      // const limit = opts.limit > 0 ? opts.limit :
-      sqls.push(`LIMIT ${opts.limit}`);
-    }
+    const offset = opts.start ?? 0;
+    let rowCount = -1;
+    if (isN(opts.limit)) rowCount = opts.limit;
+    if (isN(opts.end)) rowCount = opts.end - offset;
+    if (rowCount >= 0) sqls.push(`LIMIT ${offset}, ${rowCount}`);
 
     //
     // Pager
     //
     // .page(opts.page)
-    // .start(opts.start)
-    // .end(opts.end)
 
     //
     // Embed & Parent

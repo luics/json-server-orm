@@ -11,17 +11,18 @@ export class ValidationError extends Error {
 }
 
 // @see https://nodejs.org/dist/latest-v12.x/docs/api/util.html#util_deprecated_apis
-export const isObject = (v: unknown): boolean => v !== null && typeof v === 'object';
+// eslint-disable-next-line @typescript-eslint/ban-types
+export const isObject = (v: unknown): v is object => v !== null && typeof v === 'object';
 export const isPrimitive = (v: unknown): boolean =>
   (typeof v !== 'object' && typeof v !== 'function') || v === null;
-export const isString = (v: unknown): boolean => typeof v === 'string';
-export const isNumber = (v: unknown): boolean => typeof v === 'number';
+export const isString = (v: unknown): v is string => typeof v === 'string';
+export const isNumber = (v: unknown): v is number => typeof v === 'number';
 export const isN = isNumber;
 export const { isInteger } = Number;
 export const { isArray, isArray: isA } = Array;
-export const isBoolean = (v: unknown): boolean => typeof v === 'boolean';
-export const isNull = (v: unknown): boolean => v === null;
-export const isUndefined = (v: unknown): boolean => v === undefined;
+export const isBoolean = (v: unknown): v is boolean => typeof v === 'boolean';
+export const isNull = (v: unknown): v is null => v === null;
+export const isUndefined = (v: unknown): v is undefined => v === undefined;
 export const isNullOrUndefined = (v: unknown): boolean => v === undefined || v === null;
 export const isFunction = (v: unknown): boolean => typeof v === 'function';
 

@@ -65,21 +65,21 @@ describe(`Plural [${my ? 'mysql-server' : 'json-server'}]`, () => {
 
   it('db.posts.all()', async () => {
     ok((await db.posts.all()).length > 0);
-    deepStrictEqual((await db.posts.all()).length, len);
+    deepStrictEqual(await db.posts.all(), p);
   });
 
   it('db.posts.all({ ids })', async () => {
-    deepStrictEqual((await db.posts.all({ ids: [] })).length, len);
-    deepStrictEqual((await db.posts.all({ ids: [1] })).length, 1);
-    deepStrictEqual((await db.posts.all({ ids: [1, 2] })).length, 2);
-    deepStrictEqual((await db.posts.all({ ids: [1, 10000] })).length, 1);
+    deepStrictEqual(await db.posts.all({ ids: [] }), p);
+    deepStrictEqual(await db.posts.all({ ids: [1] }), [p[0]]);
+    deepStrictEqual(await db.posts.all({ ids: [1, 2] }), [p[0], p[1]]);
+    deepStrictEqual(await db.posts.all({ ids: [1, 10000] }), [p[0]]);
   });
 
   it('db.posts.all({ limit })', async () => {
-    deepStrictEqual((await db.posts.all({ limit: 1 })).length, 1);
-    deepStrictEqual((await db.posts.all({ limit: len })).length, len);
+    deepStrictEqual(await db.posts.all({ limit: 1 }), [p[0]]);
+    deepStrictEqual(await db.posts.all({ limit: len }), p);
     // TODO deepStrictEqual((await db.posts.all({ limit: -1 })).length, len - 1);
-    deepStrictEqual((await db.posts.all({ limit: len + 1 })).length, len);
+    deepStrictEqual(await db.posts.all({ limit: len + 1 }), p);
   });
 
   // it('db.posts.all({ page: 0 })', async () => {
@@ -111,18 +111,19 @@ describe(`Plural [${my ? 'mysql-server' : 'json-server'}]`, () => {
   // });
 
   it('db.posts.all({ sort, order })', async () => {
-    deepStrictEqual((await db.posts.all({ sort: 'id' }))[0].id, 1);
-    deepStrictEqual((await db.posts.all({ sort: 'id', order: 'asc' }))[0].id, 1);
-    deepStrictEqual((await db.posts.all({ sort: 'id', order: 'desc' }))[0].id, 20);
+    deepStrictEqual(await db.posts.all({ sort: 'id' }), p);
+    deepStrictEqual(await db.posts.all({ sort: 'id', order: 'asc' }), p);
+    deepStrictEqual(await db.posts.all({ sort: 'id', order: 'desc' }), [...p].reverse());
   });
 
-  // it('db.posts.all({ start, end, limit })', async () => {
-  //   deepStrictEqual((await db.posts.all({ start: 0, end: 1 })).length, 1);
-  //   deepStrictEqual((await db.posts.all({ start: 0, end: 1 }))[0].id, 1);
-  //   deepStrictEqual((await db.posts.all({ start: 0, end: 10 }))[9].id, 10);
-  //   deepStrictEqual((await db.posts.all({ start: 0, end: 10, limit: 5 }))[4].id, 5);
-  //   deepStrictEqual((await db.posts.all({ start: 1, end: 1 })).length, 0);
-  // });
+  it('db.posts.all({ start, end, limit })', async () => {
+    deepStrictEqual(await db.posts.all({ start: 0, end: 1 }), [p[0]]);
+    deepStrictEqual(await db.posts.all({ end: 1 }), [p[0]]);
+    deepStrictEqual(await db.posts.all({ start: 0, end: 10 }), p.slice(0, 10));
+    deepStrictEqual(await db.posts.all({ start: 0, limit: 5 }), p.slice(0, 5));
+    deepStrictEqual(await db.posts.all({ start: 1, end: 1 }), []);
+    deepStrictEqual(await db.posts.all({ start: 1, limit: 0 }), []);
+  });
 
   it('db.posts.all({ gte, lte })', async () => {
     deepStrictEqual(await db.posts.all({ lte: { id: 3 } }), [p[0], p[1], p[2]]);
@@ -137,7 +138,7 @@ describe(`Plural [${my ? 'mysql-server' : 'json-server'}]`, () => {
   });
 
   it('db.posts.all({ like })', async () => {
-    deepStrictEqual((await db.posts.all({ like: { title: 'wer' } })).length, 1);
+    deepStrictEqual(await db.posts.all({ like: { title: 'wer' } }), [p[3]]);
     deepStrictEqual((await db.posts.all({ like: { title: 'post' } })).length, 18);
   });
 
