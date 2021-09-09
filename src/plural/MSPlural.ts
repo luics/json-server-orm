@@ -113,7 +113,9 @@ export default class JSPlural<T extends PluralSchema> extends Plural<T> {
     // JOIN(embed, expand)
     //
     if (isSelect) {
-      console.log(this.v?.schema);
+      // console.log(this.v?.schema);
+      // 'SELECT posts.*, users.id AS users__id, users.name AS users__name, users.token AS users__token
+      // FROM posts LEFT JOIN users on users.id=posts.userId WHERE posts.userId=2'
       // if (opts.expand) opts.expand.forEach((it) => url.expand(it));
       // if (opts.embed) opts.embed.forEach((it) => url.embed(it));
     }
