@@ -32,4 +32,7 @@ export const { assign, keys, values, entries } = Object;
 
 export const arr = (v: V | V[]): V[] => (isA(v) ? v : [v]);
 /** @see https://github.com/lodash/lodash/blob/master/isEmpty.js */
-export const isEmpty = (v?: KVO): boolean => (v ? !Object.keys(v).length : false);
+export const isEmpty = (v?: KVO | V[]): boolean => {
+  if (!v) return true;
+  return isA(v) ? !v.length : !Object.keys(v).length;
+};

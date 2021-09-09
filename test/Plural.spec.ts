@@ -68,6 +68,16 @@ describe(`Plural [${my ? 'mysql-server' : 'json-server'}]`, () => {
     deepStrictEqual(await db.posts.all(), p);
   });
 
+  it('db.posts.all({ expand })', async () => {
+    deepStrictEqual((await db.posts.all({ ids: [1] }))[0].user, undefined);
+    deepStrictEqual((await db.posts.all({ ids: [1], expand: ['user'] }))[0].user, u[0]);
+  });
+
+  // it('db.posts.all({ embed })', async () => {
+  //   deepStrictEqual((await db.posts.all({ ids: [1] }))[0].comments, undefined);
+  //   deepStrictEqual((await db.posts.all({ ids: [1], embed: ['comments'] }))[0].comments?.length, 3);
+  // });
+
   it('db.posts.all({ param })', async () => {
     deepStrictEqual(await db.posts.all({ param: {} }), p);
     deepStrictEqual(await db.posts.all({ param: { userId: 2 } }), [p[2], ...p.slice(5, 10)]);
@@ -137,16 +147,6 @@ describe(`Plural [${my ? 'mysql-server' : 'json-server'}]`, () => {
     deepStrictEqual(await db.posts.all({ page: 1, limit: 5, start: 10, end: 20 }), p.slice(0, 5));
     deepStrictEqual(await db.posts.all({ page: 1, start: 10, end: 20 }), p.slice(0, 10));
   });
-
-  // it('db.posts.all({ expand })', async () => {
-  //   deepStrictEqual((await db.posts.all({ ids: [1] }))[0].user, undefined);
-  //   deepStrictEqual((await db.posts.all({ ids: [1], expand: ['user'] }))[0].user?.id, 1);
-  // });
-
-  // it('db.posts.all({ embed })', async () => {
-  //   deepStrictEqual((await db.posts.all({ ids: [1] }))[0].comments, undefined);
-  //   deepStrictEqual((await db.posts.all({ ids: [1], embed: ['comments'] }))[0].comments?.length, 3);
-  // });
 
   it('db.posts.one()', async () => {
     deepStrictEqual((await db.posts.one(1))?.id, 1);

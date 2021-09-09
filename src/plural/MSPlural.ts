@@ -9,10 +9,7 @@ const { keys, values, entries } = Object;
 
 export default class JSPlural<T extends PluralSchema> extends Plural<T> {
   public async count(opts?: QueryOptions): Promise<number> {
-    const sql = `SELECT COUNT(id) as \`count\` FROM \`${this.api}\` ${
-      opts ? JSPlural.getSql(opts) : ''
-    }`;
-    console.log(sql);
+    const sql = this.getSql(false, opts ?? {});
     const url = new UrlBuilder(this.server, 'query', this.token).p('sql', sql).toString();
     const res = await axios.get(url);
 
@@ -20,18 +17,18 @@ export default class JSPlural<T extends PluralSchema> extends Plural<T> {
   }
 
   public async all(opts?: QueryOptions): Promise<T[]> {
-    const sql = `SELECT * FROM \`${this.api}\` ${opts ? JSPlural.getSql(opts) : ''}`;
-    console.log(sql);
-    // const url = new UrlBuilder(this.server, 'query', this.token).toString();
-    // const res = await axios.get(url, {
-    //   data: sql,
-    //   headers: { 'content-type': 'text/plain' },
-    // });
+    const sql = this.getSql(true, opts ?? {});
     const url = new UrlBuilder(this.server, 'query', this.token).p('sql', sql).toString();
     const res = await axios.get(url);
-    // console.log(res.data);
+    const { data } = res;
+    if (!isEmpty(opts?.expand)) {
+      // TODO expand data
+    }
+    if (!isEmpty(opts?.embed)) {
+      // TODO embed data
+    }
 
-    return res.data;
+    return data;
   }
 
   public async one(id: number): Promise<T | undefined> {
@@ -99,9 +96,28 @@ export default class JSPlural<T extends PluralSchema> extends Plural<T> {
   /**
    * @see https://gist.github.com/bradtraversy/c831baaad44343cc945e76c2e30927b3
    */
-  static getSql(opts: QueryOptions): string {
+  private getSql(isSelect: boolean, opts: QueryOptions): string {
     const { build } = MSPlural;
     const sqls: string[] = [];
+
+    //
+    // SELECT
+    //
+    if (isSelect) {
+      sqls.push(`SELECT * FROM \`${this.api}\``);
+    } else {
+      sqls.push(`SELECT COUNT(id) as \`count\` FROM \`${this.api}\``);
+    }
+
+    //
+    // JOIN(embed, expand)
+    //
+    if (isSelect) {
+      console.log(this.validate?.schema);
+      // if (opts.expand) opts.expand.forEach((it) => url.expand(it));
+      // if (opts.embed) opts.embed.forEach((it) => url.embed(it));
+    }
+
     //
     // WHERE(param, like, q, ids, gte, lte, ne)
     //
@@ -143,11 +159,10 @@ export default class JSPlural<T extends PluralSchema> extends Plural<T> {
     if (rowCount >= 0) sqls.push(`LIMIT ${offset}, ${rowCount}`);
 
     //
-    // Embed & Parent
+    // return
     //
-    // if (opts.embed) opts.embed.forEach((it) => url.embed(it));
-    // if (opts.expand) opts.expand.forEach((it) => url.expand(it));
-
-    return sqls.join(' ');
+    const sql = sqls.join(' ');
+    console.log(sql);
+    return sql;
   }
 }
