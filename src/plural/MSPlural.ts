@@ -4,7 +4,7 @@ import { esc } from '@luics/mysql-server';
 import { KVO, V, Plural, QueryOptions, PluralSchema, isA, MSPlural, isEmpty, UrlBuilder } from '..';
 import { isN } from '../util';
 
-const enc = encodeURIComponent;
+// const enc = encodeURIComponent;
 const { keys, values, entries } = Object;
 
 export default class JSPlural<T extends PluralSchema> extends Plural<T> {
@@ -13,11 +13,8 @@ export default class JSPlural<T extends PluralSchema> extends Plural<T> {
       opts ? JSPlural.getSql(opts) : ''
     }`;
     console.log(sql);
-    const url = new UrlBuilder(this.server, 'query', this.token).toString();
-    const res = await axios.get(url, {
-      data: sql,
-      headers: { 'content-type': 'text/plain' },
-    });
+    const url = new UrlBuilder(this.server, 'query', this.token).p('sql', sql).toString();
+    const res = await axios.get(url);
 
     return res.data[0].count;
   }
@@ -25,12 +22,13 @@ export default class JSPlural<T extends PluralSchema> extends Plural<T> {
   public async all(opts?: QueryOptions): Promise<T[]> {
     const sql = `SELECT * FROM \`${this.api}\` ${opts ? JSPlural.getSql(opts) : ''}`;
     console.log(sql);
-    // FIXME esc %
-    const url = new UrlBuilder(this.server, 'query', this.token).toString();
-    const res = await axios.get(url, {
-      data: sql,
-      headers: { 'content-type': 'text/plain' },
-    });
+    // const url = new UrlBuilder(this.server, 'query', this.token).toString();
+    // const res = await axios.get(url, {
+    //   data: sql,
+    //   headers: { 'content-type': 'text/plain' },
+    // });
+    const url = new UrlBuilder(this.server, 'query', this.token).p('sql', sql).toString();
+    const res = await axios.get(url);
     // console.log(res.data);
 
     return res.data;
@@ -51,7 +49,7 @@ export default class JSPlural<T extends PluralSchema> extends Plural<T> {
       .map((o) => `'${esc(`${o}`)}'`)
       .join(', ');
     const sql = `INSERT INTO \`${this.api}\` (${k}) VALUES (${v})`;
-    const url = new UrlBuilder(this.server, 'query', this.token).p('sql', enc(sql)).toString();
+    const url = new UrlBuilder(this.server, 'query', this.token).p('sql', sql).toString();
     const res = await axios.get(url);
     if (res.data.affectedRows !== 1) throw new Error(`Failed: ${sql}`);
 
@@ -68,7 +66,7 @@ export default class JSPlural<T extends PluralSchema> extends Plural<T> {
     );
     const sets = ent.map(([k, v]) => (k === 'id' ? '' : `\`${k}\`='${esc(`${v}`)}'`)).join(', ');
     const sql = `UPDATE \`${this.api}\` SET ${sets} WHERE id='${data.id}'`;
-    const url = new UrlBuilder(this.server, 'query', this.token).p('sql', enc(sql)).toString();
+    const url = new UrlBuilder(this.server, 'query', this.token).p('sql', sql).toString();
     const res = await axios.get(url);
     if (res.data.affectedRows !== 1) throw new Error(`Failed: ${sql}`);
 
@@ -77,7 +75,7 @@ export default class JSPlural<T extends PluralSchema> extends Plural<T> {
 
   public async delete(id: number): Promise<void> {
     const sql = `DELETE FROM \`${this.api}\` WHERE id='${id}'`;
-    const url = new UrlBuilder(this.server, 'query', this.token).p('sql', enc(sql)).toString();
+    const url = new UrlBuilder(this.server, 'query', this.token).p('sql', sql).toString();
     const res = await axios.get(url);
     if (res.data.affectedRows !== 1) throw new Error(`Failed: ${sql}`);
 

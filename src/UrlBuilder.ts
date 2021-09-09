@@ -17,11 +17,6 @@ export default class UrlBuilder {
     if (n === '') throw new Error('name is empty');
     if (v === undefined) return this;
 
-    // let val;
-    // if (typeof v === 'object' && v !== null && 'toString' in v) val = v.toString();
-    // else if (typeof v === 'symbol') val = v.description;
-    // else val = `${v}`;
-
     this.params.push(`${encodeURIComponent(n)}=${encodeURIComponent(`${v}`)}`);
     return this;
   }
