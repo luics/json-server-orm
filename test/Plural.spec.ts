@@ -68,61 +68,28 @@ describe(`Plural [${my ? 'mysql-server' : 'json-server'}]`, () => {
     deepStrictEqual(await db.posts.all(), p);
   });
 
+  it('db.posts.all({ param })', async () => {
+    deepStrictEqual(await db.posts.all({ param: {} }), p);
+    deepStrictEqual(await db.posts.all({ param: { userId: 2 } }), [p[2], ...p.slice(5, 10)]);
+    deepStrictEqual(await db.posts.all({ param: { userId: [1, 2] } }), p);
+    deepStrictEqual(await db.posts.all({ param: { title: 'post from ab' } }), p.slice(10, 20));
+    deepStrictEqual(await db.posts.all({ param: { title: 'post from ab', userId: 0 } }), []);
+  });
+
+  // it('db.posts.all({ q })', async () => {
+  //   deepStrictEqual((await db.posts.all({ q: 'wer' })).length, 1);
+  // });
+
+  it('db.posts.all({ like })', async () => {
+    deepStrictEqual(await db.posts.all({ like: { title: 'wer' } }), [p[3]]);
+    deepStrictEqual((await db.posts.all({ like: { title: 'post' } })).length, 18);
+  });
+
   it('db.posts.all({ ids })', async () => {
     deepStrictEqual(await db.posts.all({ ids: [] }), p);
     deepStrictEqual(await db.posts.all({ ids: [1] }), [p[0]]);
     deepStrictEqual(await db.posts.all({ ids: [1, 2] }), [p[0], p[1]]);
     deepStrictEqual(await db.posts.all({ ids: [1, 10000] }), [p[0]]);
-  });
-
-  it('db.posts.all({ limit })', async () => {
-    deepStrictEqual(await db.posts.all({ limit: 1 }), [p[0]]);
-    deepStrictEqual(await db.posts.all({ limit: len }), p);
-    // TODO deepStrictEqual((await db.posts.all({ limit: -1 })).length, len - 1);
-    deepStrictEqual(await db.posts.all({ limit: len + 1 }), p);
-  });
-
-  // it('db.posts.all({ page: 0 })', async () => {
-  //   const posts = await db.posts.all({ page: 0 });
-  //   deepStrictEqual(posts.length, 10);
-  //   deepStrictEqual(posts[0].id, 1);
-  //   deepStrictEqual(posts[9].id, 10);
-  // });
-
-  // it('db.posts.all({ page: 1 })', async () => {
-  //   const posts = await db.posts.all({ page: 1 });
-  //   deepStrictEqual(posts.length, 10);
-  //   deepStrictEqual(posts[0].id, 1);
-  //   deepStrictEqual(posts[9].id, 10);
-  // });
-
-  // it('db.posts.all({ page: 1, limit: 5 })', async () => {
-  //   const posts = await db.posts.all({ page: 1, limit: 5 });
-  //   deepStrictEqual(posts.length, 5);
-  //   deepStrictEqual(posts[0].id, 1);
-  //   deepStrictEqual(posts[4].id, 5);
-  // });
-
-  // it('db.posts.all({ page: 4, limit: 5 })', async () => {
-  //   const posts = await db.posts.all({ page: 4, limit: 5 });
-  //   deepStrictEqual(posts.length, 5);
-  //   deepStrictEqual(posts[0].id, 16);
-  //   deepStrictEqual(posts[4].id, 20);
-  // });
-
-  it('db.posts.all({ sort, order })', async () => {
-    deepStrictEqual(await db.posts.all({ sort: 'id' }), p);
-    deepStrictEqual(await db.posts.all({ sort: 'id', order: 'asc' }), p);
-    deepStrictEqual(await db.posts.all({ sort: 'id', order: 'desc' }), [...p].reverse());
-  });
-
-  it('db.posts.all({ start, end, limit })', async () => {
-    deepStrictEqual(await db.posts.all({ start: 0, end: 1 }), [p[0]]);
-    deepStrictEqual(await db.posts.all({ end: 1 }), [p[0]]);
-    deepStrictEqual(await db.posts.all({ start: 0, end: 10 }), p.slice(0, 10));
-    deepStrictEqual(await db.posts.all({ start: 0, limit: 5 }), p.slice(0, 5));
-    deepStrictEqual(await db.posts.all({ start: 1, end: 1 }), []);
-    deepStrictEqual(await db.posts.all({ start: 1, limit: 0 }), []);
   });
 
   it('db.posts.all({ gte, lte })', async () => {
@@ -137,14 +104,39 @@ describe(`Plural [${my ? 'mysql-server' : 'json-server'}]`, () => {
     deepStrictEqual((await db.posts.all({ ne: { id: [1, 10000] } })).length, len - 1);
   });
 
-  it('db.posts.all({ like })', async () => {
-    deepStrictEqual(await db.posts.all({ like: { title: 'wer' } }), [p[3]]);
-    deepStrictEqual((await db.posts.all({ like: { title: 'post' } })).length, 18);
+  it('db.posts.all({ sort, order })', async () => {
+    deepStrictEqual(await db.posts.all({ sort: 'id' }), p);
+    deepStrictEqual(await db.posts.all({ sort: 'id', order: 'asc' }), p);
+    deepStrictEqual(await db.posts.all({ sort: 'id', order: 'desc' }), [...p].reverse());
   });
 
-  // it('db.posts.all({ q })', async () => {
-  //   deepStrictEqual((await db.posts.all({ q: 'wer' })).length, 1);
-  // });
+  it('db.posts.all({ limit })', async () => {
+    deepStrictEqual(await db.posts.all({ limit: 1 }), [p[0]]);
+    deepStrictEqual(await db.posts.all({ limit: len }), p);
+    // TODO deepStrictEqual((await db.posts.all({ limit: -1 })).length, len - 1);
+    deepStrictEqual(await db.posts.all({ limit: len + 1 }), p);
+  });
+
+  it('db.posts.all({ page })', async () => {
+    deepStrictEqual(await db.posts.all({ page: 0 }), p.slice(0, 10));
+    deepStrictEqual(await db.posts.all({ page: 1 }), p.slice(0, 10));
+    deepStrictEqual(await db.posts.all({ page: 1, limit: 5 }), p.slice(0, 5));
+    deepStrictEqual(await db.posts.all({ page: 4, limit: 5 }), p.slice(15, 20));
+  });
+
+  it('db.posts.all({ start, end, limit })', async () => {
+    deepStrictEqual(await db.posts.all({ start: 0, end: 1 }), [p[0]]);
+    deepStrictEqual(await db.posts.all({ end: 1 }), [p[0]]);
+    deepStrictEqual(await db.posts.all({ start: 0, end: 10 }), p.slice(0, 10));
+    deepStrictEqual(await db.posts.all({ start: 0, limit: 5 }), p.slice(0, 5));
+    deepStrictEqual(await db.posts.all({ start: 1, end: 1 }), []);
+    deepStrictEqual(await db.posts.all({ start: 1, limit: 0 }), []);
+  });
+
+  it('db.posts.all({ page, start, end, limit })', async () => {
+    deepStrictEqual(await db.posts.all({ page: 1, limit: 5, start: 10, end: 20 }), p.slice(0, 5));
+    deepStrictEqual(await db.posts.all({ page: 1, start: 10, end: 20 }), p.slice(0, 10));
+  });
 
   // it('db.posts.all({ expand })', async () => {
   //   deepStrictEqual((await db.posts.all({ ids: [1] }))[0].user, undefined);
@@ -222,7 +214,7 @@ describe(`Plural [${my ? 'mysql-server' : 'json-server'}]`, () => {
   });
 
   it('db.users.add/delete()', async () => {
-    deepStrictEqual((await db.users.add({ name: 'test', token: '123' } as any))?.id, 3);
+    deepStrictEqual((await db.users.add({ name: 'test', token: '123' }))?.id, 3);
     await db.users.delete(3);
     deepStrictEqual(await db.users.all(), u);
   });

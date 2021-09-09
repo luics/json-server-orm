@@ -111,16 +111,15 @@ export default class JSPlural<T extends PluralSchema> extends Plural<T> {
     //
     const where: string[] = [];
     if (opts.param && !isEmpty(opts.param)) where.push(build(opts.param));
-    if (opts.ids?.length) where.push(build({ id: opts.ids }));
+    // TODO full-text search https://dev.mysql.com/doc/refman/8.0/en/fulltext-natural-language.html
+    // .q(opts.q);
     if (opts.like && !isEmpty(opts.like))
       where.push(build(opts.like, (n, v) => `\`${n}\` LIKE '%${esc(`${v}`)}%'`));
+    if (opts.ids?.length) where.push(build({ id: opts.ids }));
     if (opts.gte && !isEmpty(opts.gte)) where.push(build(opts.gte, (n, v) => `\`${n}\` >= ${v}`));
     if (opts.lte && !isEmpty(opts.lte)) where.push(build(opts.lte, (n, v) => `\`${n}\` <= ${v}`));
     if (opts.ne && !isEmpty(opts.ne))
       where.push(build(opts.ne, (n, v) => `\`${n}\` != ${v}`, 'AND'));
-
-    // TODO full-text search https://dev.mysql.com/doc/refman/8.0/en/fulltext-natural-language.html
-    // .q(opts.q);
 
     if (where.length) sqls.push(`WHERE ${where.join(' AND ')}`);
 
@@ -130,23 +129,22 @@ export default class JSPlural<T extends PluralSchema> extends Plural<T> {
     const order = opts.order?.toUpperCase() ?? 'ASC';
     if (opts.sort) {
       sqls.push(`ORDER BY \`${opts.sort}\` ${order}`);
-    } else {
-      sqls.push(`ORDER BY \`id\` ${order}`);
     }
 
     //
-    // LIMIT(start, end, limit)
+    // LIMIT(start, end, limit, page)
     //
-    const offset = opts.start ?? 0;
+    let offset = opts.start ?? 0;
     let rowCount = -1;
     if (isN(opts.limit)) rowCount = opts.limit;
     if (isN(opts.end)) rowCount = opts.end - offset;
-    if (rowCount >= 0) sqls.push(`LIMIT ${offset}, ${rowCount}`);
+    if (isN(opts.page) && opts.page >= 0) {
+      rowCount = !isN(opts.limit) || opts.limit <= 0 ? 10 : opts.limit;
+      const page = opts.page === 0 ? 1 : opts.page;
+      offset = (page - 1) * rowCount;
+    }
 
-    //
-    // Paginate(page, limit)
-    //
-    // .page(opts.page)
+    if (rowCount >= 0) sqls.push(`LIMIT ${offset}, ${rowCount}`);
 
     //
     // Embed & Parent
