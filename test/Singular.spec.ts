@@ -6,7 +6,7 @@ import 'mocha';
 import axios from 'axios';
 import getJsonServerApp from '@luics/json-server-simple';
 import { getMysqlServerApp } from '@luics/mysql-server';
-import { Singular, JSSingular, MSSingular, Validation } from '../src';
+import { JSSingular, MSSingular, Validation } from '../src';
 import dbJson from './server/db.json';
 import schema from './server/schema.json';
 import { Profile } from './server/schema';
@@ -18,16 +18,15 @@ const port = 31989 + Math.floor(Math.random() * 10000);
 const s = `http://localhost:${port}/api`;
 const app = my
   ? getMysqlServerApp({ mysqlConfig: config.mysql, level: 'access' })
-  : getJsonServerApp({ watch: dbJson });
+  : getJsonServerApp({ watch: dbJson, schema });
 const v = new Validation(schema);
-const db: { profile: Singular<Profile> } = {
-  profile: my
-    ? new MSSingular<Profile>(s, 'profile', v.validation.profile)
-    : new JSSingular<Profile>(s, 'profile', v.validation.profile),
+const db = {
+  profile: my ? new MSSingular<Profile>(s, 'profile', v) : new JSSingular<Profile>(s, 'profile', v),
 };
-let server: http.Server;
 
 describe(`Singular [${my ? 'mysql-server' : 'json-server'}]`, () => {
+  let server: http.Server;
+
   before((done) => {
     server = http.createServer(app);
     server.listen(port, async () => {

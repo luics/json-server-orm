@@ -18,24 +18,19 @@ const port = 31989 + Math.floor(Math.random() * 10000);
 const s = `http://localhost:${port}/api`;
 const app = my
   ? getMysqlServerApp({ mysqlConfig: config.mysql, level: 'access' }) //
-  : getJsonServerApp({ watch: dbJson, level: 'access' });
+  : getJsonServerApp({ watch: dbJson, level: 'access', schema });
 const v = new Validation(schema);
 const db = {
-  posts: my
-    ? new MSPlural<Post>(s, 'posts', v.validation.post)
-    : new JSPlural<Post>(s, 'posts', v.validation.post),
-  comments: my
-    ? new MSPlural<Comment>(s, 'comments', v.validation.comment)
-    : new JSPlural<Comment>(s, 'comments', v.validation.comment),
-  users: my
-    ? new MSPlural<User>(s, 'users', v.validation.user)
-    : new JSPlural<User>(s, 'users', v.validation.user),
+  posts: my ? new MSPlural<Post>(s, 'posts', v) : new JSPlural<Post>(s, 'posts', v),
+  comments: my ? new MSPlural<Comment>(s, 'comments', v) : new JSPlural<Comment>(s, 'comments', v),
+  users: my ? new MSPlural<User>(s, 'users', v) : new JSPlural<User>(s, 'users', v),
 };
 const { comments: c, posts: p, users: u } = dbJson;
 const len = p.length;
-let server: http.Server;
 
 describe(`Plural [${my ? 'mysql-server' : 'json-server'}]`, () => {
+  let server: http.Server;
+
   before((done) => {
     server = http.createServer(app);
     server.listen(port, async () => {

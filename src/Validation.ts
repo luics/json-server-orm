@@ -9,19 +9,25 @@ export default class Validation {
     ajv.addKeyword('propertyOrder'); // from TJS
     ajv.addSchema(schema as any);
 
-    const keys = Object.keys((schema as any).definitions).map((k) => k.toLowerCase()); // [post, ]
-    keys.forEach((k) => {
-      const v = ajv.getSchema(`#/definitions/${Validation.key2DefinitionName(k)}`);
+    Object.keys((schema as any).definitions).forEach((k) => {
+      const v = ajv.getSchema(`#/definitions/${k}`);
       if (v) this.validation[k] = v;
     });
   }
 
-  static key2DefinitionName(k: string): string {
-    return k[0].toUpperCase() + k.substr(1); // post -> Post
+  /** post -> Post */
+  static key2dn(key: string): string {
+    return key[0].toUpperCase() + key.substr(1);
   }
 
-  static table2DefinitionName(t: string): string {
-    return t[0].toUpperCase() + t.substr(1, t.length - 2); // posts -> Post
+  /** Post -> post */
+  static dn2key(dn: string): string {
+    return dn.toLowerCase();
+  }
+
+  /** posts -> Post */
+  static tn2dn(tn: string): string {
+    return tn[0].toUpperCase() + tn.substr(1, tn.length - 2);
   }
 
   getOwnProperties(name: string): { [k: string]: any } {
@@ -53,8 +59,7 @@ export default class Validation {
     });
     // keep definition order
     const order =
-      ((this.schema as any).definitions[Validation.table2DefinitionName(name)]
-        ?.propertyOrder as string[]) ?? [];
+      ((this.schema as any).definitions[Validation.tn2dn(name)]?.propertyOrder as string[]) ?? [];
     const retFields: string[] = [];
     order.forEach((f) => fields.includes(f) && retFields.push(f));
 
@@ -63,7 +68,7 @@ export default class Validation {
 
   private getProperties(name: string): { [k: string]: any } {
     return (
-      ((this.schema as any).definitions[Validation.table2DefinitionName(name)]?.properties as {
+      ((this.schema as any).definitions[Validation.tn2dn(name)]?.properties as {
         [k: string]: any;
       }) ?? {}
     );

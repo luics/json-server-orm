@@ -1,14 +1,18 @@
 import { ValidateFunction } from 'ajv';
-import { ValidationError } from '.';
+import { Validation, ValidationError } from '.';
 import { Schema } from './schema';
+
+// const { tn2dn, key2dn } = Validation;
 
 export default class Base<T extends Schema> {
   public isPlural = true;
 
+  public validate!: ValidateFunction<T>;
+
   constructor(
     public server: string,
     public api: string,
-    public validate?: ValidateFunction<T>,
+    public v: Validation,
     public token?: string
   ) {
     if (server.endsWith('/')) this.server = server.substr(0, server.length - 1);

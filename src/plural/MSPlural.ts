@@ -113,7 +113,7 @@ export default class JSPlural<T extends PluralSchema> extends Plural<T> {
     // JOIN(embed, expand)
     //
     if (isSelect) {
-      console.log(this.validate?.schema);
+      console.log(this.v?.schema);
       // if (opts.expand) opts.expand.forEach((it) => url.expand(it));
       // if (opts.embed) opts.embed.forEach((it) => url.embed(it));
     }
