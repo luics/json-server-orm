@@ -11,6 +11,17 @@ CREATE TABLE `comments` (
 
 
 --
+-- [Plural] groups
+--
+DROP TABLE IF EXISTS `groups`;
+CREATE TABLE `groups` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(20) NOT NULL,
+  PRIMARY KEY (`id`)
+);
+
+
+--
 -- [Plural] posts
 --
 DROP TABLE IF EXISTS `posts`;
@@ -18,6 +29,7 @@ CREATE TABLE `posts` (
   `id` BIGINT NOT NULL AUTO_INCREMENT,
   `title` VARCHAR(50) NOT NULL,
   `userId` BIGINT NOT NULL,
+  `groupId` BIGINT NOT NULL,
   PRIMARY KEY (`id`)
 );
 

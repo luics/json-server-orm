@@ -1,13 +1,25 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import axios from 'axios';
 import { esc } from '@luics/mysql-server';
-import { KVO, V, Plural, QueryOptions, PluralSchema, isA, MSPlural, isEmpty, UrlBuilder } from '..';
+import {
+  KVO,
+  V,
+  Plural,
+  QueryOptions,
+  PluralSchema,
+  isA,
+  isEmpty,
+  UrlBuilder,
+  Validation,
+} from '..';
 import { isN } from '../util';
+
+const { on2tn, on2dn, tn2dn } = Validation;
 
 // const enc = encodeURIComponent;
 const { keys, values, entries } = Object;
 
-export default class JSPlural<T extends PluralSchema> extends Plural<T> {
+export default class MSPlural<T extends PluralSchema> extends Plural<T> {
   public async count(opts?: QueryOptions): Promise<number> {
     const sql = this.getSql(false, opts ?? {});
     const url = new UrlBuilder(this.server, 'query', this.token).p('sql', sql).toString();
@@ -22,8 +34,22 @@ export default class JSPlural<T extends PluralSchema> extends Plural<T> {
     const res = await axios.get(url);
     const { data } = res;
     if (!isEmpty(opts?.expand)) {
-      // TODO expand data
+      opts?.expand?.forEach((on) => {
+        const tn = on2tn(on);
+        const fs = this.v.getOwnFields(on2dn(on));
+        data.forEach((row: any) => {
+          fs.forEach((f) => {
+            const k = `${tn}__${f}`;
+            if (k in row) {
+              if (!row[on]) row[on] = {};
+              row[on][f] = row[k];
+              delete row[k];
+            }
+          });
+        });
+      });
     }
+
     if (!isEmpty(opts?.embed)) {
       // TODO embed data
     }
@@ -79,12 +105,14 @@ export default class JSPlural<T extends PluralSchema> extends Plural<T> {
     return res.data;
   }
 
-  static build(p: KVO, op = (n: string, v: V) => `\`${n}\`='${esc(`${v}`)}'`, rel = 'OR'): string {
+  private eqop = (n: string, v: V): string => `\`${this.api}\`.\`${n}\`='${esc(`${v}`)}'`;
+
+  static build(conditions: KVO, op: (n: string, v: V) => string, logic = 'OR'): string {
     const s: string[] = [];
-    entries(p).forEach(([n, v]) => {
+    entries(conditions).forEach(([n, v]) => {
       if (isA(v)) {
-        const ps = v.map((v1) => op(n, v1));
-        if (ps.length) s.push(`(${ps.join(` ${rel} `)})`);
+        const cs = v.map((v1) => op(n, v1));
+        if (cs.length) s.push(`(${cs.join(` ${logic} `)})`);
       } else {
         s.push(`(${op(n, v)})`);
       }
@@ -98,42 +126,63 @@ export default class JSPlural<T extends PluralSchema> extends Plural<T> {
    */
   private getSql(isSelect: boolean, opts: QueryOptions): string {
     const { build } = MSPlural;
+    const { api: tn, v: val } = this;
     const sqls: string[] = [];
+
+    let fields: string[] = ['*'];
+    //
+    // JOIN(embed, expand)
+    //
+    const joins: string[] = [];
+    if (isSelect) {
+      if (!isEmpty(opts.expand)) {
+        fields.splice(0, 1);
+        fields = fields.concat(val.getOwnFields(tn2dn(tn)).map((o) => `\`${tn}\`.\`${o}\``));
+      }
+
+      opts.expand?.forEach((on) => {
+        const tn1 = on2tn(on);
+        const dn = on2dn(on);
+        const fs = val.getOwnFields(dn);
+        // SELECT posts.*, users.id AS users__id, users.name AS users__name, users.token AS users__token
+        // FROM posts
+        // LEFT JOIN users on users.id=posts.userId
+        // LEFT JOIN `groups` on `groups`.id=posts.groupId
+        // WHERE posts.userId=2
+        fields = fields.concat(fs.map((o) => `\`${tn1}\`.\`${o}\` AS \`${tn1}__${o}\``));
+        joins.push(`LEFT JOIN \`${tn1}\` ON \`${tn1}\`.\`id\`=\`${tn}\`.\`${on}Id\``);
+        // console.log('[expand]', on, dn, tn1, fields);
+      });
+
+      // if (opts.embed) opts.embed.forEach((it) => url.embed(it));
+    }
 
     //
     // SELECT
     //
     if (isSelect) {
-      sqls.push(`SELECT * FROM \`${this.api}\``);
+      sqls.push(`SELECT ${fields.join(', ')} \nFROM \`${this.api}\``);
+      joins.forEach((o) => sqls.push(o));
     } else {
-      sqls.push(`SELECT COUNT(id) as \`count\` FROM \`${this.api}\``);
-    }
-
-    //
-    // JOIN(embed, expand)
-    //
-    if (isSelect) {
-      // console.log(this.v?.schema);
-      // 'SELECT posts.*, users.id AS users__id, users.name AS users__name, users.token AS users__token
-      // FROM posts LEFT JOIN users on users.id=posts.userId WHERE posts.userId=2'
-      // if (opts.expand) opts.expand.forEach((it) => url.expand(it));
-      // if (opts.embed) opts.embed.forEach((it) => url.embed(it));
+      sqls.push(`SELECT COUNT(id) as \`count\` \nFROM \`${this.api}\``);
     }
 
     //
     // WHERE(param, like, q, ids, gte, lte, ne)
     //
     const where: string[] = [];
-    if (opts.param && !isEmpty(opts.param)) where.push(build(opts.param));
+    if (opts.param && !isEmpty(opts.param)) where.push(build(opts.param, this.eqop));
     // TODO full-text search https://dev.mysql.com/doc/refman/8.0/en/fulltext-natural-language.html
     // .q(opts.q);
     if (opts.like && !isEmpty(opts.like))
-      where.push(build(opts.like, (n, v) => `\`${n}\` LIKE '%${esc(`${v}`)}%'`));
-    if (opts.ids?.length) where.push(build({ id: opts.ids }));
-    if (opts.gte && !isEmpty(opts.gte)) where.push(build(opts.gte, (n, v) => `\`${n}\` >= ${v}`));
-    if (opts.lte && !isEmpty(opts.lte)) where.push(build(opts.lte, (n, v) => `\`${n}\` <= ${v}`));
+      where.push(build(opts.like, (n, v) => `\`${tn}\`.\`${n}\` LIKE '%${esc(`${v}`)}%'`));
+    if (opts.ids?.length) where.push(build({ id: opts.ids }, this.eqop));
+    if (opts.gte && !isEmpty(opts.gte))
+      where.push(build(opts.gte, (n, v) => `\`${tn}\`.\`${n}\` >= ${v}`));
+    if (opts.lte && !isEmpty(opts.lte))
+      where.push(build(opts.lte, (n, v) => `\`${tn}\`.\`${n}\` <= ${v}`));
     if (opts.ne && !isEmpty(opts.ne))
-      where.push(build(opts.ne, (n, v) => `\`${n}\` != ${v}`, 'AND'));
+      where.push(build(opts.ne, (n, v) => `\`${tn}\`.\`${n}\` != ${v}`, 'AND'));
 
     if (where.length) sqls.push(`WHERE ${where.join(' AND ')}`);
 
@@ -142,7 +191,7 @@ export default class JSPlural<T extends PluralSchema> extends Plural<T> {
     //
     const order = opts.order?.toUpperCase() ?? 'ASC';
     if (opts.sort) {
-      sqls.push(`ORDER BY \`${opts.sort}\` ${order}`);
+      sqls.push(`ORDER BY \`${tn}\`.\`${opts.sort}\` ${order}`);
     }
 
     //
@@ -163,8 +212,8 @@ export default class JSPlural<T extends PluralSchema> extends Plural<T> {
     //
     // return
     //
-    const sql = sqls.join(' ');
-    console.log(sql);
+    const sql = sqls.join('\n');
+    console.log(`>>>\n${sql}\n<<<`);
     return sql;
   }
 }

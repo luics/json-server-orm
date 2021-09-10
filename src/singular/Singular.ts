@@ -12,7 +12,7 @@ export default abstract class Singular<T extends SingularSchema> extends Base<T>
   ) {
     super(server, api, v, token);
 
-    this.validate = v.validation[Validation.key2dn(api)];
+    this.validate = v.validation[Validation.on2dn(api)];
     // console.log('[dn]', Validation.key2dn(api), this.validate);
   }
 

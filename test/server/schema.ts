@@ -12,6 +12,11 @@ export interface Post extends PluralSchema {
    */
   userId: number;
 
+  /**
+   * @TJS-type integer
+   */
+  groupId: number;
+
   // tags?: string[];
   // meta?: object;
   // private?: boolean;
@@ -19,6 +24,7 @@ export interface Post extends PluralSchema {
   // test?: null;
 
   user?: User;
+  group?: Group;
   comments?: Comment[];
 }
 
@@ -43,6 +49,14 @@ export interface Comment extends PluralSchema {
    */
   postId: number;
   post?: Post;
+}
+
+export interface Group extends PluralSchema {
+  /**
+   * @minLength 1
+   * @maxLength 20
+   */
+  name: string;
 }
 
 /**

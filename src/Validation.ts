@@ -1,6 +1,11 @@
 import Ajv, { ValidateFunction } from 'ajv';
 import { JSONType } from '.';
 
+/**
+ * on = object name, post
+ * tn = table name, posts
+ * dn = definition name, Post
+ */
 export default class Validation {
   validation: { [key: string]: ValidateFunction<any> } = {};
 
@@ -16,12 +21,17 @@ export default class Validation {
   }
 
   /** post -> Post */
-  static key2dn(key: string): string {
-    return key[0].toUpperCase() + key.substr(1);
+  static on2dn(on: string): string {
+    return on[0].toUpperCase() + on.substr(1);
+  }
+
+  /** post -> posts */
+  static on2tn(on: string): string {
+    return `${on}s`;
   }
 
   /** Post -> post */
-  static dn2key(dn: string): string {
+  static dn2on(dn: string): string {
     return dn.toLowerCase();
   }
 
@@ -30,9 +40,9 @@ export default class Validation {
     return tn[0].toUpperCase() + tn.substr(1, tn.length - 2);
   }
 
-  getOwnProperties(name: string): { [k: string]: any } {
-    const fields = this.getOwnFields(name);
-    const allProps = this.getProperties(name);
+  getOwnProperties(dn: string): { [k: string]: any } {
+    const fields = this.getOwnFields(dn);
+    const allProps = this.getProperties(dn);
     const props = {} as any;
 
     if (allProps) {
@@ -43,8 +53,8 @@ export default class Validation {
     return props;
   }
 
-  getOwnFields(name: string): string[] {
-    const ps = this.getProperties(name);
+  getOwnFields(dn: string): string[] {
+    const ps = this.getProperties(dn);
     const fields: string[] = [];
     if (!ps) return fields;
 
@@ -58,25 +68,24 @@ export default class Validation {
       }
     });
     // keep definition order
-    const order =
-      ((this.schema as any).definitions[Validation.tn2dn(name)]?.propertyOrder as string[]) ?? [];
+    const order = ((this.schema as any).definitions[dn]?.propertyOrder as string[]) ?? [];
     const retFields: string[] = [];
     order.forEach((f) => fields.includes(f) && retFields.push(f));
 
     return retFields;
   }
 
-  private getProperties(name: string): { [k: string]: any } {
+  private getProperties(dn: string): { [k: string]: any } {
     return (
-      ((this.schema as any).definitions[Validation.tn2dn(name)]?.properties as {
+      ((this.schema as any).definitions[dn]?.properties as {
         [k: string]: any;
       }) ?? {}
     );
   }
 
   // @see https://ajv.js.org/guide/modifying-data.html#assigning-defaults
-  getDefaultItem(name: string): any {
-    const ps = this.getOwnProperties(name);
+  getDefaultItem(dn: string): any {
+    const ps = this.getOwnProperties(dn);
     const props = {} as any;
     if (ps) {
       Object.entries(ps).forEach(([k, v]) => {

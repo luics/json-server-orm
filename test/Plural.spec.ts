@@ -25,7 +25,7 @@ const db = {
   comments: my ? new MSPlural<Comment>(s, 'comments', v) : new JSPlural<Comment>(s, 'comments', v),
   users: my ? new MSPlural<User>(s, 'users', v) : new JSPlural<User>(s, 'users', v),
 };
-const { comments: c, posts: p, users: u } = dbJson;
+const { comments: c, posts: p, users: u, groups: g } = dbJson;
 const len = p.length;
 
 describe(`Plural [${my ? 'mysql-server' : 'json-server'}]`, () => {
@@ -64,8 +64,12 @@ describe(`Plural [${my ? 'mysql-server' : 'json-server'}]`, () => {
   });
 
   it('db.posts.all({ expand })', async () => {
-    deepStrictEqual((await db.posts.all({ ids: [1] }))[0].user, undefined);
-    deepStrictEqual((await db.posts.all({ ids: [1], expand: ['user'] }))[0].user, u[0]);
+    deepStrictEqual(await db.posts.all({ ids: [1] }), [p[0]]);
+    deepStrictEqual(await db.posts.all({ ids: [1], expand: [] }), [p[0]]);
+    deepStrictEqual(await db.posts.all({ ids: [1], expand: ['user'] }), [{ ...p[0], user: u[0] }]);
+    deepStrictEqual(await db.posts.all({ ids: [1], expand: ['user', 'group'] }), [
+      { ...p[0], user: u[0], group: g[0] },
+    ]);
   });
 
   // it('db.posts.all({ embed })', async () => {
@@ -149,8 +153,14 @@ describe(`Plural [${my ? 'mysql-server' : 'json-server'}]`, () => {
   });
 
   it('db.posts.add/delete()', async () => {
-    deepStrictEqual((await db.posts.add({ title: 'post from test', userId: 1 }))?.id, len + 1);
-    deepStrictEqual((await db.posts.add({ title: 'post from test', userId: 1 }))?.id, len + 2);
+    deepStrictEqual(
+      (await db.posts.add({ title: 'post from test', userId: 1, groupId: 1 }))?.id,
+      len + 1
+    );
+    deepStrictEqual(
+      (await db.posts.add({ title: 'post from test', userId: 1, groupId: 2 }))?.id,
+      len + 2
+    );
     await db.posts.delete(len + 2);
     await db.posts.delete(len + 1);
     deepStrictEqual((await db.posts.all()).length, len);
@@ -162,8 +172,14 @@ describe(`Plural [${my ? 'mysql-server' : 'json-server'}]`, () => {
   });
 
   it('db.posts.update()', async () => {
-    deepStrictEqual((await db.posts.update({ id: 1, title: '12345', userId: 1 }))?.title, '12345');
-    deepStrictEqual((await db.posts.update({ id: 1, title: '12345', userId: 2 }))?.userId, 2);
+    deepStrictEqual(
+      (await db.posts.update({ id: 1, title: '12345', userId: 1, groupId: 1 }))?.title,
+      '12345'
+    );
+    deepStrictEqual(
+      (await db.posts.update({ id: 1, title: '12345', userId: 2, groupId: 1 }))?.userId,
+      2
+    );
   });
 
   it('db.posts.count()', async () => {
