@@ -22,16 +22,14 @@ const { keys, values, entries } = Object;
 export default class MSPlural<T extends PluralSchema> extends Plural<T> {
   public async count(opts?: QueryOptions): Promise<number> {
     const sql = this.getSql(false, opts ?? {});
-    const url = new UrlBuilder(this.server, 'query', this.token).p('sql', sql).toString();
-    const res = await axios.get(url);
+    const res = await this.fetch(sql);
 
     return res.data[0].count;
   }
 
   public async all(opts?: QueryOptions): Promise<T[]> {
     const sql = this.getSql(true, opts ?? {});
-    const url = new UrlBuilder(this.server, 'query', this.token).p('sql', sql).toString();
-    const res = await axios.get(url);
+    const res = await this.fetch(sql);
     const { data } = res;
     if (!isEmpty(opts?.expand)) {
       opts?.expand?.forEach((on) => {
@@ -72,8 +70,7 @@ export default class MSPlural<T extends PluralSchema> extends Plural<T> {
       .map((o) => `'${esc(`${o}`)}'`)
       .join(', ');
     const sql = `INSERT INTO \`${this.api}\` (${k}) VALUES (${v})`;
-    const url = new UrlBuilder(this.server, 'query', this.token).p('sql', sql).toString();
-    const res = await axios.get(url);
+    const res = await this.fetch(sql);
     if (res.data.affectedRows !== 1) throw new Error(`Failed: ${sql}`);
 
     return { ...data, id: res.data.insertId };
@@ -89,8 +86,7 @@ export default class MSPlural<T extends PluralSchema> extends Plural<T> {
     );
     const sets = ent.map(([k, v]) => (k === 'id' ? '' : `\`${k}\`='${esc(`${v}`)}'`)).join(', ');
     const sql = `UPDATE \`${this.api}\` SET ${sets} WHERE id='${data.id}'`;
-    const url = new UrlBuilder(this.server, 'query', this.token).p('sql', sql).toString();
-    const res = await axios.get(url);
+    const res = await this.fetch(sql);
     if (res.data.affectedRows !== 1) throw new Error(`Failed: ${sql}`);
 
     return data;
@@ -98,11 +94,17 @@ export default class MSPlural<T extends PluralSchema> extends Plural<T> {
 
   public async delete(id: number): Promise<void> {
     const sql = `DELETE FROM \`${this.api}\` WHERE id='${id}'`;
-    const url = new UrlBuilder(this.server, 'query', this.token).p('sql', sql).toString();
-    const res = await axios.get(url);
+    const res = await this.fetch(sql);
     if (res.data.affectedRows !== 1) throw new Error(`Failed: ${sql}`);
 
     return res.data;
+  }
+
+  private async fetch(sql: string) {
+    const url = new UrlBuilder(this.server, 'query', this.token).toString();
+    return axios.get(url, { data: sql, headers: { 'Content-Type': 'text/plain' } });
+    // const url = new UrlBuilder(this.server, 'query', this.token).p('sql', sql).toString();
+    // return axios.get(url);
   }
 
   private eqop = (n: string, v: V): string => `\`${this.api}\`.\`${n}\`='${esc(`${v}`)}'`;
