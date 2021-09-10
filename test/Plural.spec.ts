@@ -67,9 +67,21 @@ describe(`Plural [${my ? 'mysql-server' : 'json-server'}]`, () => {
     deepStrictEqual(await db.posts.all({ ids: [1] }), [p[0]]);
     deepStrictEqual(await db.posts.all({ ids: [1], expand: [] }), [p[0]]);
     deepStrictEqual(await db.posts.all({ ids: [1], expand: ['user'] }), [{ ...p[0], user: u[0] }]);
+    deepStrictEqual(await db.posts.all({ ids: [1, 3], expand: ['user'] }), [
+      { ...p[0], user: u[0] },
+      { ...p[2], user: u[1] },
+    ]);
     deepStrictEqual(await db.posts.all({ ids: [1], expand: ['user', 'group'] }), [
       { ...p[0], user: u[0], group: g[0] },
     ]);
+    deepStrictEqual(await db.posts.all({ ids: [1, 2], expand: ['user', 'group'] }), [
+      { ...p[0], user: u[0], group: g[0] },
+      { ...p[1], user: u[0], group: g[1] },
+    ]);
+    // check sql syntax
+    ok(
+      await db.posts.all({ expand: ['user'], like: { title: 'post' }, gte: { id: 1 }, sort: 'id' })
+    );
   });
 
   // it('db.posts.all({ embed })', async () => {

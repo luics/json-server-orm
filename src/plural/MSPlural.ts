@@ -14,7 +14,7 @@ import {
 } from '..';
 import { isN } from '../util';
 
-const { on2tn, on2dn, tn2dn } = Validation;
+const { on2tn, on2dn } = Validation;
 
 // const enc = encodeURIComponent;
 const { keys, values, entries } = Object;
@@ -129,17 +129,12 @@ export default class MSPlural<T extends PluralSchema> extends Plural<T> {
     const { api: tn, v: val } = this;
     const sqls: string[] = [];
 
-    let fields: string[] = ['*'];
+    let fields: string[] = [`\`${tn}\`.*`];
     //
     // JOIN(embed, expand)
     //
     const joins: string[] = [];
     if (isSelect) {
-      if (!isEmpty(opts.expand)) {
-        fields.splice(0, 1);
-        fields = fields.concat(val.getOwnFields(tn2dn(tn)).map((o) => `\`${tn}\`.\`${o}\``));
-      }
-
       opts.expand?.forEach((on) => {
         const tn1 = on2tn(on);
         const dn = on2dn(on);
