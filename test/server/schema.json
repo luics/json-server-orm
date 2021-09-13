@@ -119,6 +119,36 @@
             ],
             "type": "object"
         },
+        "Tag": {
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "maxLength": 20,
+                    "minLength": 1,
+                    "type": "string"
+                },
+                "post": {
+                    "$ref": "#/definitions/Post"
+                },
+                "postId": {
+                    "type": "integer"
+                }
+            },
+            "propertyOrder": [
+                "name",
+                "postId",
+                "post",
+                "id"
+            ],
+            "required": [
+                "id",
+                "name",
+                "postId"
+            ],
+            "type": "object"
+        },
         "User": {
             "properties": {
                 "id": {

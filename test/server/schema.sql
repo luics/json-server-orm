@@ -44,6 +44,18 @@ CREATE TABLE `profile` (
 
 
 --
+-- [Plural] tags
+--
+DROP TABLE IF EXISTS `tags`;
+CREATE TABLE `tags` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(20) NOT NULL,
+  `postId` BIGINT NOT NULL,
+  PRIMARY KEY (`id`)
+);
+
+
+--
 -- [Plural] users
 --
 DROP TABLE IF EXISTS `users`;

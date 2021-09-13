@@ -148,6 +148,33 @@
       "postId": 1
     }
   ],
+  "tags": [
+    {
+      "id": 1,
+      "name": "tag-1",
+      "postId": 1
+    },
+    {
+      "id": 2,
+      "name": "tag-2",
+      "postId": 2
+    },
+    {
+      "id": 3,
+      "name": "tag-3",
+      "postId": 3
+    },
+    {
+      "id": 4,
+      "name": "tag-4",
+      "postId": 1
+    },
+    {
+      "id": 5,
+      "name": "tag-5",
+      "postId": 1
+    }
+  ],
   "users": [
     {
       "id": 1,

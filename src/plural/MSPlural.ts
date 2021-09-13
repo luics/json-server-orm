@@ -10,11 +10,12 @@ import {
   isA,
   isEmpty,
   UrlBuilder,
+  isArray,
   Validation,
 } from '..';
 import { isN } from '../util';
 
-const { on2tn, on2dn } = Validation;
+const { on2tn, tn2on } = Validation;
 
 // const enc = encodeURIComponent;
 const { keys, values, entries } = Object;
@@ -28,31 +29,45 @@ export default class MSPlural<T extends PluralSchema> extends Plural<T> {
   }
 
   public async all(opts?: QueryOptions): Promise<T[]> {
+    const { api: tn } = this;
     const sql = this.getSql(true, opts ?? {});
     const res = await this.fetch(sql);
     const { data } = res;
-    if (!isEmpty(opts?.expand)) {
-      opts?.expand?.forEach((on) => {
-        const tn = on2tn(on);
-        const fs = this.v.getOwnFields(on2dn(on));
-        data.forEach((row: any) => {
-          fs.forEach((f) => {
-            const k = `${tn}__${f}`;
-            if (k in row) {
-              if (!row[on]) row[on] = {};
-              row[on][f] = row[k];
-              delete row[k];
-            }
-          });
+
+    const hasExpand = !isEmpty(opts?.expand);
+    const hasEmbed = !isEmpty(opts?.embed);
+
+    if (hasExpand) {
+      const mainRows = data[0];
+      opts?.expand?.forEach((on, i) => {
+        const eRows = data[3 * (i + 1)];
+        if (!isArray(eRows) || !eRows.length) return;
+
+        const onid = `${on}Id`;
+        mainRows.forEach((mainRow: any) => {
+          mainRow[on] = eRows.find((o) => mainRow[onid] === o.id) ?? null;
         });
       });
     }
 
-    if (!isEmpty(opts?.embed)) {
-      // TODO embed data
+    if (hasEmbed) {
+      let base = 0;
+      if (opts?.expand?.length) base += opts.expand.length * 3;
+
+      // console.log(data);
+      const mainRows = data[0];
+      opts?.embed?.forEach((etn, i) => {
+        const eRows = data[base + 3 * (i + 1)];
+        if (!isArray(eRows) || !eRows.length) return;
+
+        const tnid = `${tn2on(tn)}Id`;
+        mainRows.forEach((mainRow: any) => {
+          mainRow[etn] = eRows.filter((o) => mainRow.id === o[tnid]);
+        });
+      });
     }
 
-    return data;
+    return hasExpand || hasEmbed ? data[0] : data;
   }
 
   public async one(id: number): Promise<T | undefined> {
@@ -128,41 +143,18 @@ export default class MSPlural<T extends PluralSchema> extends Plural<T> {
    */
   private getSql(isSelect: boolean, opts: QueryOptions): string {
     const { build } = MSPlural;
-    const { api: tn, v: val } = this;
+    const { api: tn } = this;
     const sqls: string[] = [];
 
-    let fields: string[] = [`\`${tn}\`.*`];
     //
-    // JOIN(embed, expand)
-    //
-    const joins: string[] = [];
-    if (isSelect) {
-      opts.expand?.forEach((on) => {
-        const tn1 = on2tn(on);
-        const dn = on2dn(on);
-        const fs = val.getOwnFields(dn);
-        // SELECT posts.*, users.id AS users__id, users.name AS users__name, users.token AS users__token
-        // FROM posts
-        // LEFT JOIN users on users.id=posts.userId
-        // LEFT JOIN `groups` on `groups`.id=posts.groupId
-        // WHERE posts.userId=2
-        fields = fields.concat(fs.map((o) => `\`${tn1}\`.\`${o}\` AS \`${tn1}__${o}\``));
-        joins.push(`LEFT JOIN \`${tn1}\` ON \`${tn1}\`.\`id\`=\`${tn}\`.\`${on}Id\``);
-        // console.log('[expand]', on, dn, tn1, fields);
-      });
-
-      // if (opts.embed) opts.embed.forEach((it) => url.embed(it));
-    }
-
-    //
-    // SELECT
+    // SELECT & FROM
     //
     if (isSelect) {
-      sqls.push(`SELECT ${fields.join(', ')} \nFROM \`${this.api}\``);
-      joins.forEach((o) => sqls.push(o));
+      sqls.unshift(`SELECT \`${tn}\`.*`);
     } else {
-      sqls.push(`SELECT COUNT(id) as \`count\` \nFROM \`${this.api}\``);
+      sqls.unshift(`SELECT COUNT(id) as \`count\``);
     }
+    sqls.push(`FROM \`${tn}\``);
 
     //
     // WHERE(param, like, q, ids, gte, lte, ne)
@@ -207,9 +199,45 @@ export default class MSPlural<T extends PluralSchema> extends Plural<T> {
     if (rowCount >= 0) sqls.push(`LIMIT ${offset}, ${rowCount}`);
 
     //
+    // More(embed, expand)
+    //
+    const mainSql = `${sqls.join('\n')}`;
+    const esqls = [`${mainSql};`];
+
+    if (isSelect && !isEmpty(opts.expand)) {
+      opts.expand?.forEach((on) => {
+        const etn = on2tn(on);
+        const eid = `${on}Id`;
+        const rnd = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+        const tmptb = `tmp_${eid}_${rnd}`;
+
+        esqls.push(`DROP TABLE IF EXISTS \`${tmptb}\`;`);
+        esqls.push(`CREATE TEMPORARY TABLE \`${tmptb}\` \n${mainSql};`);
+        esqls.push(
+          `SELECT * FROM \`${etn}\` WHERE \`id\` IN (SELECT DISTINCT \`${eid}\` FROM \`${tmptb}\`);`
+        );
+      });
+    }
+
+    if (isSelect && !isEmpty(opts.embed)) {
+      opts.embed?.forEach((etn) => {
+        const tnid = `${tn2on(tn)}Id`;
+        const etnid = `${tn2on(etn)}Id`;
+        const rnd = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+        const tmptb = `tmp_${etnid}_${rnd}`;
+
+        esqls.push(`DROP TABLE IF EXISTS \`${tmptb}\`;`);
+        esqls.push(`CREATE TEMPORARY TABLE \`${tmptb}\` \n${mainSql};`);
+        esqls.push(
+          `SELECT * FROM \`${etn}\` WHERE \`${tnid}\` IN (SELECT DISTINCT \`id\` FROM \`${tmptb}\`);`
+        );
+      });
+    }
+
+    //
     // return
     //
-    const sql = sqls.join('\n');
+    const sql = esqls.join('\n');
     console.log(`>>>\n${sql}\n<<<`);
     return sql;
   }

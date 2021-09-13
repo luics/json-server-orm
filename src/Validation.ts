@@ -40,6 +40,11 @@ export default class Validation {
     return tn[0].toUpperCase() + tn.substr(1, tn.length - 2);
   }
 
+  /** posts -> post */
+  static tn2on(tn: string): string {
+    return tn.substr(0, tn.length - 1);
+  }
+
   getOwnProperties(dn: string): { [k: string]: any } {
     const fields = this.getOwnFields(dn);
     const allProps = this.getProperties(dn);

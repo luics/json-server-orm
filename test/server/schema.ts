@@ -59,6 +59,19 @@ export interface Group extends PluralSchema {
   name: string;
 }
 
+export interface Tag extends PluralSchema {
+  /**
+   * @minLength 1
+   * @maxLength 20
+   */
+  name: string;
+  /**
+   * @TJS-type integer
+   */
+  postId: number;
+  post?: Post;
+}
+
 /**
  * @additionalProperties true
  */

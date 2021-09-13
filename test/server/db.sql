@@ -36,6 +36,17 @@ INSERT INTO `comments` (`body`, `postId`) VALUES ('some comment 5', '1');
 
 
 --
+-- [Plural] tags
+--
+INSERT INTO `tags` (`name`, `postId`) VALUES ('tag-1', '1');
+INSERT INTO `tags` (`name`, `postId`) VALUES ('tag-2', '2');
+INSERT INTO `tags` (`name`, `postId`) VALUES ('tag-3', '3');
+INSERT INTO `tags` (`name`, `postId`) VALUES ('tag-4', '1');
+INSERT INTO `tags` (`name`, `postId`) VALUES ('tag-5', '1');
+
+
+
+--
 -- [Plural] users
 --
 INSERT INTO `users` (`name`, `token`) VALUES ('typicode', '123');
