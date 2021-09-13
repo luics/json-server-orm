@@ -1,7 +1,7 @@
 {
   "access": "public",
   "name": "@luics/json-server-orm",
-  "version": "0.4.17",
+  "version": "0.4.18",
   "description": "",
   "author": "luics.xu@gmail.com",
   "license": "MIT",
@@ -39,7 +39,7 @@
   "devDependencies": {
     "@luics/eslint-config": "^0.1.5",
     "@luics/json-server-simple": "^0.4.11",
-    "@luics/mysql-server": "0.0.9",
+    "@luics/mysql-server": "0.0.10",
     "@types/assert": "^1.5.1",
     "@types/json-server": "^0.14.3",
     "@types/mocha": "^7.0.2",
