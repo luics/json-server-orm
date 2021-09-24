@@ -1,7 +1,8 @@
 import http from 'http';
 import 'mocha';
 import getJsonServerApp from '@luics/json-server-simple';
-import { Profile, SingularSpecs, Validation } from '@luics/x-server-orm';
+import { Validation } from '@luics/x-server-orm';
+import { Profile, SingularSpecs } from '@luics/x-server-orm/cjs/test';
 import dbJson from '@luics/x-server-orm/cjs/test/db.json';
 import schemaJson from '@luics/x-server-orm/cjs/test/schema.json';
 import { JSSingular } from '../src';
