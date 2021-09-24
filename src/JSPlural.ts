@@ -1,5 +1,7 @@
 import axios from 'axios';
-import { arr, Plural, UrlBuilder, QueryOptions, PluralSchema, entries } from '..';
+import { arr, Plural, UrlBuilder, QueryOptions, PluralSchema, entries, keys, Validation } from '.';
+
+const { tn2dn } = Validation;
 
 export default class JSPlural<T extends PluralSchema> extends Plural<T> {
   public async count(opts?: QueryOptions): Promise<number> {
@@ -11,16 +13,31 @@ export default class JSPlural<T extends PluralSchema> extends Plural<T> {
   public async all(opts?: QueryOptions): Promise<T[]> {
     const url = this.getUrl(opts);
     const res = await axios.get(url.toString());
-    return res.data;
+
+    const rows: T[] = res.data;
+    // Default values
+    rows.forEach((row: any) => {
+      const ps = this.v.getOwnProperties(tn2dn(this.tn));
+      keys(ps).forEach((p) => {
+        if (!(p in row)) {
+          const { type } = this.v.getProperty(tn2dn(this.tn), p);
+          if (type === 'string') row[p] = '';
+          else if (type === 'array') row[p] = [];
+          else if (type === 'object') row[p] = {};
+        }
+      });
+    });
+
+    return rows;
   }
 
-  public async one(id: number): Promise<T | undefined> {
-    const items = await this.all({ ids: [id] });
+  public async one(id: number, opts?: QueryOptions): Promise<T | undefined> {
+    const items = await this.all({ ...(opts ?? {}), ids: [id] });
     return items[0];
   }
 
   public async add(data: unknown): Promise<T> {
-    this.val({ ...(data as any), id: 0 });
+    data = this.val({ ...(data as any), id: 0 }) as T;
     const url = new UrlBuilder(this.server, this.api, this.token).toString();
     const res = await axios.post(url, data);
 
@@ -28,7 +45,7 @@ export default class JSPlural<T extends PluralSchema> extends Plural<T> {
   }
 
   public async update(data: T): Promise<T> {
-    this.val(data);
+    data = this.val({ ...data }) as T;
     const url = new UrlBuilder(this.server, `${this.api}/${data.id}`, this.token).toString();
     const res = await axios.patch(url, data);
 

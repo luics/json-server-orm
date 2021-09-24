@@ -1,0 +1,31 @@
+import http from 'http';
+import 'mocha';
+import getJsonServerApp from '@luics/json-server-simple';
+import { Profile, SingularSpecs, Validation } from '@luics/x-server-orm';
+import dbJson from '@luics/x-server-orm/cjs/test/db.json';
+import schemaJson from '@luics/x-server-orm/cjs/test/schema.json';
+import { JSSingular } from '../src';
+
+const port = 31989 + Math.floor(Math.random() * 10000);
+const s = `http://localhost:${port}/api`;
+const app = getJsonServerApp({ watch: dbJson, schema: schemaJson });
+const v = new Validation(schemaJson);
+const db = {
+  profile: new JSSingular<Profile>(s, 'profile', v),
+};
+
+describe(`Singular`, () => {
+  let server: http.Server;
+
+  before((done) => {
+    server = http.createServer(app);
+    server.listen(port, done);
+  });
+
+  after(async () => {
+    if (!server) return;
+    server.close();
+  });
+
+  SingularSpecs(db);
+});

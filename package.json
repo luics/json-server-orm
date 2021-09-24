@@ -33,12 +33,13 @@
     "npm": ">= 6.14.13"
   },
   "dependencies": {
+    "@luics/x-server-orm": "0.0.4",
     "ajv": "^8.6.2",
     "axios": "^0.21.1"
   },
   "devDependencies": {
     "@luics/eslint-config": "^0.1.5",
-    "@luics/json-server-simple": "^0.4.11",
+    "@luics/json-server-simple": "^0.4.12",
     "@luics/mysql-server": "0.0.10",
     "@types/assert": "^1.5.1",
     "@types/json-server": "^0.14.3",
