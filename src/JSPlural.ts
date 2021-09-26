@@ -31,11 +31,6 @@ export default class JSPlural<T extends PluralSchema> extends Plural<T> {
     return rows;
   }
 
-  public async one(id: number, opts?: QueryOptions): Promise<T | undefined> {
-    const items = await this.all({ ...(opts ?? {}), ids: [id] });
-    return items[0];
-  }
-
   public async add(data: unknown): Promise<T> {
     data = this.val({ ...(data as any), id: 0 }) as T;
     const url = new UrlBuilder(this.server, this.api, this.token).toString();

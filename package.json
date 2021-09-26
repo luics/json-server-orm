@@ -33,7 +33,7 @@
     "npm": ">= 6.14.13"
   },
   "dependencies": {
-    "@luics/x-server-orm": "0.0.6",
+    "@luics/x-server-orm": "0.0.7",
     "ajv": "^8.6.2",
     "axios": "^0.21.1"
   },
