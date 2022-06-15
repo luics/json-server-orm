@@ -1,3 +1,7 @@
 node_modules/
 cjs/
-local.config.json
+#
+# coverage
+#
+.nyc_output/
+coverage/
