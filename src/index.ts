@@ -1,4 +1,4 @@
-export * from '@luics/x-server-orm';
+export * from './x-server-orm/src';
 
-export { default as JSPlural } from './JSPlural';
-export { default as JSSingular } from './JSSingular';
+export { JSPlural } from './JSPlural';
+export { JSSingular } from './JSSingular';

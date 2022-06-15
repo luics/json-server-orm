@@ -1,9 +1,9 @@
 import axios from 'axios';
-import { Plural, QueryOptions, UrlBuilder } from '.';
+import { Plural, QueryOptions, UrlBuilder } from './x-server-orm/src';
 
 // const { tn2dn } = SchemaUtil;
 
-export default class JSPlural<T> extends Plural<T> {
+export class JSPlural<T> extends Plural<T> {
   public async count(opts?: QueryOptions): Promise<number> {
     const url = this.getUrl(opts).limit(opts?.limit ?? 1);
     const res = await axios.head(url.toString());

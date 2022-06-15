@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { Singular, UrlBuilder, KVO } from '.';
+import { Singular, UrlBuilder, KVO } from './x-server-orm/src';
 
-export default class JSSingular<T> extends Singular<T> {
+export class JSSingular<T> extends Singular<T> {
   public async one(): Promise<T & KVO> {
     const url = new UrlBuilder(this.server, this.api, this.token).toString();
     const res = await axios.get(url);
