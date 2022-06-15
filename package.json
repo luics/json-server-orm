@@ -21,6 +21,8 @@
     "test:dev": "nodemon --watch ./ --ext ts --delay 0 --exec 'printf \"\\33c\\e[3J\" && npm t'",
     "entity2schema": "entity2schema -i src/x-server-orm/src/test/entity/*.ts -o test/schema.json",
     "data2sql": "data2sql -i src/x-server-orm/src/test/db.json -o test/db.sql",
+    "pull-x": "git subtree pull --prefix=src/x-server-orm x-server-orm main --squash",
+    "push-x": "git subtree push --prefix=src/x-server-orm x-server-orm main",
     "dist": "rm -rf cjs && tsc -p tsconfig.cjs.json",
     "preversion": "npm run lint && npm test",
     "version": "npm run dist && git add -A .",
