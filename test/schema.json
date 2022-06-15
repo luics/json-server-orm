@@ -1,0 +1,278 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "Group": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "name": {
+          "type": "string"
+        },
+        "posts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Post"
+          }
+        }
+      },
+      "propertyOrder": [
+        "id",
+        "name",
+        "posts"
+      ],
+      "required": [
+        "id",
+        "name"
+      ],
+      "_resolvedPath": "/users/ali-luics/proj/x-server-orm/src/test/entity/group.entity.ts"
+    },
+    "Tag": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "name": {
+          "type": "string"
+        },
+        "postId": {
+          "type": "number"
+        },
+        "post": {
+          "$ref": "#/definitions/Post"
+        }
+      },
+      "propertyOrder": [
+        "id",
+        "name",
+        "postId",
+        "post"
+      ],
+      "required": [
+        "id",
+        "name",
+        "postId"
+      ],
+      "_resolvedPath": "/users/ali-luics/proj/x-server-orm/src/test/entity/tag.entity.ts"
+    },
+    "User": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "name": {
+          "type": "string"
+        },
+        "token": {
+          "type": "string"
+        },
+        "posts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Post"
+          }
+        }
+      },
+      "propertyOrder": [
+        "id",
+        "name",
+        "token",
+        "posts"
+      ],
+      "required": [
+        "id",
+        "name",
+        "token"
+      ],
+      "_resolvedPath": "/users/ali-luics/proj/x-server-orm/src/test/entity/user.entity.ts"
+    },
+    "Post": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "title": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "number"
+        },
+        "groupId": {
+          "type": "number"
+        },
+        "user": {
+          "$ref": "#/definitions/User"
+        },
+        "group": {
+          "$ref": "#/definitions/Group"
+        },
+        "comments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Comment"
+          }
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Tag"
+          }
+        }
+      },
+      "propertyOrder": [
+        "id",
+        "title",
+        "userId",
+        "groupId",
+        "user",
+        "group",
+        "comments",
+        "tags"
+      ],
+      "required": [
+        "groupId",
+        "id",
+        "title",
+        "userId"
+      ],
+      "_resolvedPath": "/users/ali-luics/proj/x-server-orm/src/test/entity/post.entity.ts"
+    },
+    "Comment": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "body": {
+          "type": "string"
+        },
+        "postId": {
+          "type": "number"
+        },
+        "post": {
+          "$ref": "#/definitions/Post"
+        }
+      },
+      "propertyOrder": [
+        "id",
+        "body",
+        "postId",
+        "post"
+      ],
+      "required": [
+        "body",
+        "id",
+        "postId"
+      ],
+      "_resolvedPath": "/users/ali-luics/proj/x-server-orm/src/test/entity/comment.entity.ts"
+    },
+    "Product": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "arr": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "arr1": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "obj": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "obj1": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        }
+      },
+      "propertyOrder": [
+        "id",
+        "arr",
+        "arr1",
+        "obj",
+        "obj1"
+      ],
+      "required": [
+        "arr",
+        "id",
+        "obj"
+      ],
+      "_resolvedPath": "/users/ali-luics/proj/x-server-orm/src/test/entity/product.entity.ts"
+    },
+    "Profile": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "desc": {
+          "type": "string"
+        }
+      },
+      "propertyOrder": [
+        "name",
+        "desc"
+      ],
+      "required": [
+        "desc",
+        "name"
+      ],
+      "_resolvedPath": "/users/ali-luics/proj/x-server-orm/src/test/entity/profile.entity.ts",
+      "additionalProperties": true
+    },
+    "Testonly": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "metadata": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true
+        },
+        "private": {
+          "type": "boolean"
+        },
+        "private1": {
+          "type": "boolean"
+        },
+        "weight": {
+          "type": "number"
+        }
+      },
+      "propertyOrder": [
+        "id",
+        "tags",
+        "metadata",
+        "private",
+        "private1",
+        "weight"
+      ],
+      "required": [
+        "id"
+      ],
+      "_resolvedPath": "/users/ali-luics/proj/x-server-orm/src/test/entity/testonly.entity.ts"
+    }
+  }
+}
