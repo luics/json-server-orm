@@ -20,8 +20,6 @@
     "test": "mocha -r ts-node/register test/**/*.spec.ts # --grep embed",
     "test:dev": "nodemon --watch ./ --ext ts --delay 0 --exec 'printf \"\\33c\\e[3J\" && npm t'",
     "test:mysql:dev": "nodemon --watch ./ --ext ts --delay 0 --exec 'printf \"\\33c\\e[3J\" && npm t -- --mysql'",
-    "jsonschema": "typescript-json-schema 'test/server/schema.ts' '*' -o 'test/server/schema.json' --required --propOrder",
-    "schema2sql": "schema2sql --input test/server/schema.json --output test/server/schema.sql",
     "data2sql": "data2sql --input test/server/db.json --output test/server/db.sql",
     "dist": "rm -rf cjs && tsc -p tsconfig.cjs.json",
     "preversion": "npm run lint && npm test",
@@ -33,14 +31,13 @@
     "npm": ">= 6.14.13"
   },
   "dependencies": {
-    "@luics/x-server-orm": "0.0.9",
-    "ajv": "^8.6.2",
+    "@luics/x-server-orm": "0.0.22",
     "axios": "^0.21.1"
   },
   "devDependencies": {
-    "@luics/eslint-config": "^0.1.5",
+    "@luics/eslint-config": "^0.1.6",
     "@luics/json-server-simple": "^0.4.12",
-    "@luics/mysql-server": "0.0.10",
+    "@luics/typeorm-server": "^0.7.19",
     "@types/assert": "^1.5.1",
     "@types/json-server": "^0.14.3",
     "@types/mocha": "^7.0.2",

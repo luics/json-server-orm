@@ -12,7 +12,6 @@ const s = `http://localhost:${port}/api`;
 const app = getJsonServerApp({ watch: dbJson, schema: schemaJson });
 const v = new Validation(schemaJson);
 const db = {
-  profile: new JSSingular<Profile>(s, 'profile', v),
 };
 
 describe(`Singular`, () => {
@@ -28,5 +27,4 @@ describe(`Singular`, () => {
     server.close();
   });
 
-  SingularSpecs(db);
 });
