@@ -1,0 +1,62 @@
+{
+  "access": "public",
+  "name": "@luics/x-server-orm",
+  "version": "0.0.22",
+  "description": "",
+  "author": "luics.xu@gmail.com",
+  "license": "MIT",
+  "main": "cjs/index.js",
+  "types": "cjs/index.d.js",
+  "files": [
+    "cjs"
+  ],
+  "keywords": [
+    "json-server",
+    "typeorm-server",
+    "typeorm"
+  ],
+  "scripts": {
+    "start": "npm t",
+    "lint": "eslint \"@(src|test)/**/*.@(js|ts|tsx)\"",
+    "test": "mocha -r ts-node/register test/**/*.spec.ts",
+    "test:dev": "nodemon --watch ./ --ext ts --delay 0 --exec 'printf \"\\33c\\e[3J\" && npm t'",
+    "dist": "rm -rf cjs && tsc -p tsconfig.cjs.json",
+    "preversion": "npm run lint && npm test",
+    "version": "npm run dist && git add -A .",
+    "postversion": "git push && git push --tags",
+    "pub": "npm version patch && npm publish --access public"
+  },
+  "engines": {
+    "node": ">= 14.17.0",
+    "npm": ">= 6.14.13"
+  },
+  "dependencies": {
+    "@luics/async-throws": "0.0.4",
+    "ajv": "^8.6.2",
+    "axios": "^0.21.1",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.13.2",
+    "reflect-metadata": "^0.1.13"
+  },
+  "devDependencies": {
+    "@luics/eslint-config": "^0.1.6",
+    "@types/assert": "^1.5.1",
+    "@types/mocha": "^7.0.2",
+    "@types/node": "^14.17.9",
+    "@types/validator": "^13.7.3",
+    "@typescript-eslint/eslint-plugin": "^4.29.1",
+    "@typescript-eslint/parser": "^4.29.1",
+    "eslint": "^7.32.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.24.0",
+    "eslint-plugin-prettier": "^3.4.0",
+    "mocha": "^9.0.3",
+    "nodemon": "^2.0.4",
+    "prettier": "^2.3.2",
+    "ts-node": "^8.10.2",
+    "typeorm": "^0.3.6",
+    "typescript": "^4.3.2",
+    "typescript-json-schema": "^0.50.1"
+  }
+}

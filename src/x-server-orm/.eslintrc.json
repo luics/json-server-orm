@@ -1,0 +1,3 @@
+{
+  "extends": "@luics/eslint-config/ts"
+}
