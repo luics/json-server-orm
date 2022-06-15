@@ -19,7 +19,6 @@
     "lint": "eslint \"@(src|test)/**/*.@(js|ts|tsx)\"",
     "test": "mocha -r \"ts-node/register\" test/**/*.spec.ts",
     "test:dev": "nodemon --watch ./ --ext ts --delay 0 --exec 'printf \"\\33c\\e[3J\" && npm t'",
-    "test:mysql:dev": "nodemon --watch ./ --ext ts --delay 0 --exec 'printf \"\\33c\\e[3J\" && npm t -- --mysql'",
     "entity2schema": "entity2schema -i src/x-server-orm/src/test/entity/*.ts -o test/schema.json",
     "data2sql": "data2sql -i src/x-server-orm/src/test/db.json -o test/db.sql",
     "dist": "rm -rf cjs && tsc -p tsconfig.cjs.json",
