@@ -18,7 +18,7 @@
   "scripts": {
     "start": "npm t",
     "lint": "eslint \"@(src|test)/**/*.@(js|ts|tsx)\"",
-    "test": "mocha -r ts-node/register test/**/*.spec.ts",
+    "test": "mocha -r \"ts-node/register\" test/**/*.spec.ts",
     "test:dev": "nodemon --watch ./ --ext ts --delay 0 --exec 'printf \"\\33c\\e[3J\" && npm t'",
     "dist": "rm -rf cjs && tsc -p tsconfig.cjs.json",
     "preversion": "npm run lint && npm test",

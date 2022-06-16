@@ -6,5 +6,5 @@ export class Profile {
 
   @IsString()
   @IsOptional()
-  desc: string;
+  desc?: string;
 }

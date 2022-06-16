@@ -1,22 +1,47 @@
+import axios from 'axios';
 import { arr, entries, QueryOptions, UrlBuilder } from '.';
 import { Base } from './Base';
 
 export abstract class Plural<T> extends Base<T> {
-  public abstract count(opts?: QueryOptions): Promise<number>;
+  public async count(opts?: QueryOptions): Promise<number> {
+    const url = this.getUrl(opts).limit(opts?.limit ?? 1);
+    const res = await axios.head(url.toString());
+    return parseInt(res.headers['x-total-count'] ?? '0', 10);
+  }
 
-  public abstract all(opts?: QueryOptions): Promise<T[]>;
+  public async all(opts?: QueryOptions): Promise<T[]> {
+    const url = this.getUrl(opts);
+    const res = await axios.get(url.toString());
+    const rows: T[] = res.data;
 
-  // public abstract one(id: number, opts?: QueryOptions): Promise<T | undefined>;
+    return rows;
+  }
+
   public async one(id: number, opts?: QueryOptions): Promise<T | undefined> {
     const items = await this.all({ ...(opts ?? {}), ids: [id] });
     return items[0];
   }
 
-  public abstract add(data: unknown): Promise<T>;
+  public async add(data: Partial<T>): Promise<T> {
+    const newData = this.val({ ...data, id: 0 }) as T;
+    const url = this.getUrl().toString();
+    const res = await axios.post(url, newData);
 
-  public abstract update(data: Partial<T>): Promise<T>;
+    return res.data;
+  }
 
-  public abstract delete(id: number): Promise<void>;
+  public async update(data: Partial<T>): Promise<T> {
+    const newData = this.val({ ...data }) as Partial<T> & { id: number };
+    const url = this.getUrl({}, `${this.api}/${newData.id}`).toString();
+    const res = await axios.patch(url, data);
+
+    return res.data;
+  }
+
+  public async delete(id: number): Promise<void> {
+    const url = this.getUrl({}, `${this.api}/${id}`).toString();
+    await axios.delete(url);
+  }
 
   protected getUrl(opts?: QueryOptions, api = this.api): UrlBuilder {
     const url = new UrlBuilder(this.server, api, this.token)

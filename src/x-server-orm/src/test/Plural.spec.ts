@@ -281,7 +281,7 @@ export function runPluralSpec(db: {
   it('db.users.add/delete()', async () => {
     deepStrictEqual((await db.users.add({ name: 'test', token: '123' })).id, 3);
     await db.users.delete(3);
-    const id = (await db.users.add({ name: 'test', token: '123', name1: '' })).id;
+    const id = (await db.users.add({ name: 'test', token: '123', name1: '' } as any)).id;
     ok(id >= 3);
     await db.users.delete(id);
     deepStrictEqual(await db.users.all(), us);

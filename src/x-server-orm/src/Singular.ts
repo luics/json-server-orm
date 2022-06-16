@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import { KVO } from '.';
+import axios from 'axios';
+import { KVO, UrlBuilder } from '.';
 import { Base } from './Base';
 
 export abstract class Singular<T> extends Base<T> {
@@ -11,7 +12,18 @@ export abstract class Singular<T> extends Base<T> {
     this.api = `${entityClass.name.toLowerCase()}`;
   }
 
-  public abstract one(): Promise<T & KVO>;
+  public async one(): Promise<T & KVO> {
+    const url = new UrlBuilder(this.server, this.api, this.token).toString();
+    const res = await axios.get(url);
 
-  public abstract update(data: Partial<T> & KVO, override?: boolean): Promise<T & KVO>;
+    return res.data;
+  }
+
+  public async update(data: Partial<T> & KVO): Promise<T & KVO> {
+    const newData = this.val({ ...data }) as Partial<T> & KVO;
+    const url = new UrlBuilder(this.server, this.api, this.token).toString();
+    const res = await axios.put(url, newData);
+
+    return res.data;
+  }
 }

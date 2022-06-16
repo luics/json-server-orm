@@ -16,5 +16,5 @@ export class User {
   token: string;
 
   @OneToMany(() => Post, (post) => post.user)
-  posts: Post[];
+  posts?: Post[];
 }

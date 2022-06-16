@@ -29,3 +29,31 @@ export interface QueryOptions {
 
   param?: KVO;
 }
+
+// TODO use mapped-type
+export interface WhereQueryOptions {
+  ids?: number[];
+  gte?: NKVO;
+  lte?: NKVO;
+  ne?: NKVO;
+  like?: KVO;
+  q?: string;
+  param?: KVO;
+}
+
+export interface OrderbyQueryOptions {
+  order?: Order;
+  sort?: string;
+}
+
+export interface LimitQueryOptions {
+  limit?: number;
+  page?: number;
+  start?: number;
+  end?: number;
+}
+
+export interface SelectQueryOptions {
+  embed?: string[];
+  expand?: string[];
+}

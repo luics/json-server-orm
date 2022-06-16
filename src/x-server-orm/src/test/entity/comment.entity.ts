@@ -16,5 +16,5 @@ export class Comment {
   postId: number;
 
   @ManyToOne(() => Post, (post: Post) => post.comments)
-  post: Post;
+  post?: Post;
 }

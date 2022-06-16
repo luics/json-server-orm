@@ -23,14 +23,14 @@ export class Post {
   groupId: number;
 
   @ManyToOne(() => User, (user) => user.posts)
-  user: User;
+  user?: User;
 
   @ManyToOne(() => Group, (group) => group.posts)
-  group: Group;
+  group?: Group;
 
   @OneToMany(() => Comment, (comment) => comment.post)
-  comments: Comment[];
+  comments?: Comment[];
 
   @OneToMany(() => Tag, (tag) => tag.post)
-  tags: Tag[];
+  tags?: Tag[];
 }

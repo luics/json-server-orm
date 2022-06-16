@@ -16,5 +16,5 @@ export class Tag {
   postId: number;
 
   @ManyToOne(() => Post, (post) => post.tags)
-  post: Post;
+  post?: Post;
 }

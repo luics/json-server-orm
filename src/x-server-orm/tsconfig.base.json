@@ -8,8 +8,6 @@
     "resolveJsonModule": true,
     // Check
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "removeComments": false,
-    "strictPropertyInitialization": false
+    "emitDecoratorMetadata": true
   }
 }
