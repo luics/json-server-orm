@@ -20,6 +20,8 @@
     "lint": "eslint \"@(src|test)/**/*.@(js|ts|tsx)\"",
     "test": "mocha -r \"ts-node/register\" test/**/*.spec.ts",
     "test:dev": "nodemon --watch ./ --ext ts --delay 0 --exec 'printf \"\\33c\\e[3J\" && npm t'",
+    "pull-x": "git subtree pull --prefix=src/x-server-orm x-server-orm main --squash",
+    "push-x": "git subtree push --prefix=src/x-server-orm x-server-orm main",
     "dist": "rm -rf cjs && tsc -p tsconfig.cjs.json",
     "preversion": "npm run lint && npm test",
     "version": "npm run dist && git add -A .",
